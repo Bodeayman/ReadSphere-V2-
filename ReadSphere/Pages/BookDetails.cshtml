@@ -1,0 +1,28 @@
+@page "{id:int}"
+@model BookDetailsModel
+@{
+    ViewData["Title"] = Model.Book.Title;
+}
+
+<h1>@Model.Book.Title</h1>
+<p><strong>Author:</strong> @Model.Book.Author</p>
+<p><strong>Description:</strong> @Model.Book.Description</p>
+
+<h2>Reviews</h2>
+<ul>
+    @foreach (var review in Model.Book.Reviews)
+    {
+    <li>@review</li>
+    }
+</ul>
+
+<h2>Quotes</h2>
+<ul>
+    @foreach (var quote in Model.Book.Quotes)
+    {
+    <li>@quote</li>
+    }
+</ul>
+
+<h2>Notes</h2>
+<textarea placeholder="Add your notes here..." rows="5" cols="50"></textarea>

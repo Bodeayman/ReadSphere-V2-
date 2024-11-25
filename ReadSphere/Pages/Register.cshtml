@@ -1,0 +1,61 @@
+﻿@page
+@model ReadSphere.Pages.Register
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sign Up - ReadSphere</title>
+        <link rel="stylesheet" href="css/register.css" />
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="register-container">
+                <div class="logo-section">
+                    <h1>ReadSphere</h1>
+                    <p>Meet your next favorite book</p>
+                </div>
+
+                <form id="registerForm" class="register-form">
+                    <h2>Sign Up</h2>
+
+                    <div class="form-group">
+                        <input type="text" id="name" required placeholder="Name">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" id="email" required placeholder="Email">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" id="password" required placeholder="Password">
+                        <small>At least 8 characters</small>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" id="confirmPassword" required placeholder="Confirm password">
+                    </div>
+
+                    <button type="submit" class="signup-btn">Sign up</button>
+
+                    <div class="terms">
+                        By clicking "Sign up" you agree to our terms of service and privacy policy.
+                    </div>
+
+                    <div class="login-link">
+                        Already a member? <a href="/Login">Log in</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="module" src="js/register.js"></script>
+    </body>
+
+</html>

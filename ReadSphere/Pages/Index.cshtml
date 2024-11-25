@@ -1,0 +1,177 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<link rel="stylesheet" href="~/css/home.css">
+
+<div>
+    <div class="reading-widget">
+        <div class="reading-status">
+            <h3>What are you reading?</h3>
+            <div class="search-box">
+                <input type="search" placeholder="Search books">
+                <button>🔍</button>
+            </div>
+        </div>
+
+        <!-- Carousel Section -->
+        <div class="carousel-section">
+            <div class="carousel-container">
+                <!-- Quotes Carousel -->
+                <div id="quotesCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="quote-card">
+                                <p class="quote-text">"It does not do to dwell on dreams and forget to live."
+                                </p>
+                                <p class="quote-author">- J.K. Rowling, Harry Potter and the Sorcerer's Stone
+                                </p>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="quote-card">
+                                <p class="quote-text">"So many books, so little time."</p>
+                                <p class="quote-author">- Frank Zappa</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="quote-card">
+                                <p class="quote-text">"A room without books is like a body without a soul."</p>
+                                <p class="quote-author">- Marcus Tullius Cicero</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#quotesCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#quotesCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <!-- Notes Carousel -->
+                <div id="notesCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="note-card">
+                                <h4>Reading Notes</h4>
+                                <p>Started reading "The Midnight Library" - loving the concept of infinite
+                                    possibilities!</p>
+                                <span class="note-date">January 15, 2024</span>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="note-card">
+                                <h4>Book Thoughts</h4>
+                                <p>Chapter 3 of "Project Hail Mary" - the science is mind-blowing!</p>
+                                <span class="note-date">January 14, 2024</span>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="note-card">
+                                <h4>Reading Progress</h4>
+                                <p>Finished "Dune" - what an epic journey through Arrakis!</p>
+                                <span class="note-date">January 13, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#notesCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#notesCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Books Section -->
+        <div class="books-section">
+            <h3>Popular Books</h3>
+            <div class="books-grid">
+                <div class="book-card">
+                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f" alt="Book cover"
+                        class="book-cover">
+                    <div class="book-info">
+                        <h4 class="book-title">The Midnight Library</h4>
+                        <p class="book-author">Matt Haig</p>
+                        <div class="book-rating">★★★★☆ 4.2</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e" alt="Book cover"
+                        class="book-cover">
+                    <div class="book-info">
+                        <h4 class="book-title">Project Hail Mary</h4>
+                        <p class="book-author">Andy Weir</p>
+                        <div class="book-rating">★★★★★ 4.8</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19" alt="Book cover"
+                        class="book-cover">
+                    <div class="book-info">
+                        <h4 class="book-title">Dune</h4>
+                        <p class="book-author">Frank Herbert</p>
+                        <div class="book-rating">★★★★☆ 4.3</div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e" alt="Book cover"
+                        class="book-cover">
+                    <div class="book-info">
+                        <h4 class="book-title">Tomorrow Will Be Different</h4>
+                        <p class="book-author">Sarah McBride</p>
+                        <div class="book-rating">★★★★☆ 4.1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="reading-challenge">
+            <h3>2024 READING CHALLENGE</h3>
+            <div class="challenge-stats">
+                <div class="year">2024</div>
+                <div class="stats">
+                    <h2>0</h2>
+                    <p>books completed</p>
+                    <p class="behind">4 books behind schedule</p>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 0%"></div>
+                    </div>
+                    <p class="percentage">0/5 (0%)</p>
+                </div>
+            </div>
+            <button class="view-challenge">View Challenge</button>
+        </div>
+
+        <div class="updates">
+            <div class="updates-header">
+                <h3>UPDATES</h3>
+                <button class="customize">⚙️ Customize</button>
+            </div>
+            <p class="no-updates">No More Updates</p>
+        </div>
+    </div>
+
+
+
+</div>
+<aside class="sidebar">
+    <div class="awards-banner">
+        <h2>Goodreads Choice Awards 2024</h2>
+        <p>Pick your favorite books of the year!</p>
+        <button class="vote-btn">Cast Your Vote</button>
+        <p class="vote-count">3,183,424 Votes Cast</p>
+    </div>
+</aside>
+
+<script src="~/js/homeCounter.js"></script>
+<script src="~/js/home.js"></script>

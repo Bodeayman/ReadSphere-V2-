@@ -1,0 +1,25 @@
+@page
+@model BookModel
+@{
+    ViewData["Title"] = "Books";
+}
+
+<h1>Books</h1>
+
+<div class="book-list">
+    @if (Model.Books != null && Model.Books.Any())
+    {
+        foreach (var book in Model.Books)
+        {
+            <article class="book-item">
+                <h3 class="book-title">@book.Title</h3>
+                <p class="book-author">by @book.Author</p>
+                <a class="btn btn-primary" asp-page="./BookDetails" asp-route-id="@book.Id">View Details</a>
+            </article>
+        }
+    }
+    else
+    {
+        <p>No books available.</p>
+    }
+</div>
