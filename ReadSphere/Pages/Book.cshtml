@@ -12,10 +12,20 @@
         foreach (var book in Model.Books)
         {
             <article class="book-item">
-                <h3 class="book-title">@book.Title</h3>
-                <p class="book-author">by @book.Author</p>
-                <a class="btn btn-primary" asp-page="./BookDetails" asp-route-id="@book.Id">View Details</a>
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <!-- Book Title -->
+                        <h3 class="book-title card-title">@book.Title</h3>
+
+                        <!-- Book Author -->
+                        <p class="book-author text-muted">by @book.Author</p>
+
+                        <!-- View Details Button -->
+                        <a class="btn btn-primary" asp-page="./BookDetails" asp-route-id="@book.Id">View Details</a>
+                    </div>
+                </div>
             </article>
+
         }
     }
     else

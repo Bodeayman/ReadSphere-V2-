@@ -44,3 +44,4 @@ msbuild.err
 msbuild.wrn
 Readsphere.sln
 ReadSphere/ReadSphere.csproj
+ReadSphere/Program.cs
