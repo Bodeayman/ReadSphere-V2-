@@ -1,0 +1,12 @@
+﻿@page
+@model ReadSphere.Pages.ClubsModel
+@{
+}
+<div>
+    <h1>Clubs</h1>
+    <p> this seciton Will take about the Clubs in the university</p>
+    @foreach (var club in Model.clubs)
+    {
+        <p>Club : @club</p>
+    }
+</div>

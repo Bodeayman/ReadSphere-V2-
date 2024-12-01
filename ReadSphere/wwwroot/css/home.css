@@ -1,11 +1,11 @@
-:root {
+/* :root {
     --primary-color: #382110;
     --secondary-color: #755742;
     --accent-color: #f4f1ea;
     --text-color: #333333;
     --link-color: #00635d;
 }
-
+*/
 * {
     margin: 0;
     padding: 0;
@@ -25,16 +25,11 @@ header {
     border-bottom: 1px solid #d8d8d8;
 }
 
-nav {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+
+
+
 
 .logo {
-    font-size: 1.8rem;
     font-weight: bold;
     color: var(--primary-color);
 }
@@ -98,7 +93,6 @@ main {
     border-radius: 3px;
 }
 
-/* Carousel Styles */
 .carousel-section {
     margin: 2rem 0;
     padding: 1rem;
@@ -266,14 +260,6 @@ body {
     background-color: var(--accent-color);
 }
 
-/* Navigation Styles */
-nav {
-    background-color: var(--primary-color);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 
 .logo {
     color: white;
@@ -297,7 +283,6 @@ nav {
     border: none;
 }
 
-/* Main Content Styles */
 main {
     max-width: 1200px;
     margin: 2rem auto;
@@ -307,7 +292,6 @@ main {
     gap: 2rem;
 }
 
-/* Reading Widget Styles */
 .reading-widget {
     background-color: white;
     padding: 1.5rem;
@@ -315,7 +299,6 @@ main {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Carousel Styles */
 .carousel-item {
     transition: transform 0.8s ease-in-out !important;
 }
@@ -339,7 +322,6 @@ main {
     font-weight: bold;
 }
 
-/* Books Section Styles */
 .books-section {
     margin-top: 2rem;
     padding: 1.5rem;
@@ -393,7 +375,6 @@ main {
     font-size: 0.8rem;
 }
 
-/* Sidebar Styles */
 .sidebar {
     position: sticky;
     top: 2rem;
