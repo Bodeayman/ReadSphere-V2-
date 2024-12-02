@@ -7,6 +7,12 @@ public class BookModel : PageModel
 {
     public List<Book> Books { get; set; }
     public int count { get; set; }
+    public class DataContext : DbContext
+    {
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+        public DbSet<Book> Books { get; set; }
+    }
 
     public class Book
     {

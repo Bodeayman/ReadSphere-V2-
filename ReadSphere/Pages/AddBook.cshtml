@@ -1,0 +1,39 @@
+@page
+@model AddBookModel
+@{
+    ViewData["Title"] = "Add Book";
+}
+
+<h2>Add Book</h2>
+
+<form method="post">
+    <div>
+        <label asp-for="Book.Title"></label>
+        <input asp-for="Book.Title" />
+    </div>
+    <div>
+        <label asp-for="Book.Author"></label>
+        <input asp-for="Book.Author" />
+    </div>
+    <div>
+        <label asp-for="Book.Publisher"></label>
+        <input asp-for="Book.Publisher" />
+    </div>
+    <div>
+        <label asp-for="Book.Language"></label>
+        <input asp-for="Book.Language" />
+    </div>
+    <div>
+        <label asp-for="Book.cover_image"></label>
+        <input asp-for="Book.cover_image" />
+    </div>
+    <div>
+        <label asp-for="Book.review_id"></label>
+        <input asp-for="Book.review_id" />
+    </div>
+    <button type="submit">Add Book</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
