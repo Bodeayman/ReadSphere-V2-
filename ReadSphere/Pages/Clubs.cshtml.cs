@@ -47,8 +47,8 @@ namespace ReadSphere.Pages
                     foreach (DataRow row in dataTable.Rows)
                     {
                         int Id = Convert.ToInt32(row["club_id"]);
-                        string Name = row["club_name"].ToString();
-                        string Desc = row["club_description"].ToString();
+                        string Name = row["club_name"].ToString() ?? "Unknown";
+                        string Desc = row["club_description"].ToString() ?? "Unknown";
 
 
                         Club club = new Club();
