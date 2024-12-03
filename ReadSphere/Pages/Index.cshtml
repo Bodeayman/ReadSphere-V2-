@@ -2,17 +2,11 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    @* var allBooks = ViewData["AllBooks"] as List<Book>; *@
 }
 <link rel="stylesheet" href="~/css/home.css">
 
 <div>
-    @if (Request.Cookies["User"] != null)
-    {
-        <p>
-            Welcome again Your signed in
-        </p>
-    }
-
     <div class="reading-widget">
         <div class="reading-status">
             <h3>What are you reading?</h3>
@@ -21,54 +15,38 @@
                 <button>🔍</button>
             </div>
         </div>
-        <div class="books-section">
-            <h3>My Books</h3>
-            <div class="books-grid">
-                <div class="book-card">
-                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f" alt="Book cover"
-                        class="book-cover">
-                    <div class="book-info">
-                        <h4 class="book-title">The Midnight Library</h4>
-                        <p class="book-author">Matt Haig</p>
-                        <div class="book-rating">★★★★☆ 4.2</div>
-                    </div>
-                </div>
-                <div class="book-card">
-                    <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e" alt="Book cover"
-                        class="book-cover">
-                    <div class="book-info">
-                        <h4 class="book-title">Project Hail Mary</h4>
-                        <p class="book-author">Andy Weir</p>
-                        <div class="book-rating">★★★★★ 4.8</div>
-                    </div>
-                </div>
-                <div class="book-card">
-                    <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19" alt="Book cover"
-                        class="book-cover">
-                    <div class="book-info">
-                        <h4 class="book-title">Dune</h4>
-                        <p class="book-author">Frank Herbert</p>
-                        <div class="book-rating">★★★★☆ 4.3</div>
-                    </div>
-                </div>
-                <div class="book-card">
-                    <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e" alt="Book cover"
-                        class="book-cover">
-                    <div class="book-info">
-                        <h4 class="book-title">Tomorrow Will Be Different</h4>
-                        <p class="book-author">Sarah McBride</p>
-                        <div class="book-rating">★★★★☆ 4.1</div>
-                    </div>
-                </div>
-            </div>
-            @if (Request.Cookies["is_admin"] == "admin")
-            {
-                <a class="btn btn-success" href="/AddBook">
-                    Add New Book
-                </a>
-            }
 
-        </div>
+        @if (Request.Cookies["User"] != null)
+        {
+            <div class="books-section">
+                <h3>My Books</h3>
+                <div class="books-grid">
+                    @foreach (var book in Model.mybooks)
+
+
+                    {
+                        <div class="book-card">
+                            <img src="@book.cover_image" alt="Book cover" class="book-cover">
+                            <!-- Assuming `CoverImageUrl` exists in your model -->
+                            <div class="book-info">
+                                <h4 class="book-title">@book.Title</h4>
+                                <p class="book-author">@book.Author</p>
+                                <div class="book-rating">★★★★☆ @book.review_id</div>
+                                <!-- Assuming `Rating` exists in your model -->
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Request.Cookies["is_admin"] == "admin")
+                {
+                    <a class="btn btn-success" href="/AddBook">
+                        Add New Book
+                    </a>
+                }
+            </div>
+        }
+
         <!-- Carousel Section -->
         <div class="carousel-section">
             <div class="carousel-container">
@@ -77,10 +55,8 @@
                     <div class="carousel-inner">
                         <div class="carousel-item active">
                             <div class="quote-card">
-                                <p class="quote-text">"It does not do to dwell on dreams and forget to live."
-                                </p>
-                                <p class="quote-author">- J.K. Rowling, Harry Potter and the Sorcerer's Stone
-                                </p>
+                                <p class="quote-text">"It does not do to dwell on dreams and forget to live."</p>
+                                <p class="quote-author">- J.K. Rowling, Harry Potter and the Sorcerer's Stone</p>
                             </div>
                         </div>
                         <div class="carousel-item">
@@ -146,6 +122,7 @@
                     </button>
                 </div>
             </div>
+
             @if (Request.Cookies["User"] != null)
             {
                 <button class="btn btn-primary">
@@ -155,8 +132,8 @@
                     Add New Quote
                 </button>
             }
-
         </div>
+
         <div class="reading-challenge">
             <h3> My Reading Goals</h3>
             <div class="challenge-stats">
@@ -173,7 +150,27 @@
             </div>
             <button class="view-challenge">View Challenge</button>
         </div>
+        @if (Request.Cookies["User"] != null)
+        {
+            <div class="books-section">
+                <h3>My Clubs</h3>
+                <div class="books-grid">
+                    @foreach (var club in Model.myclubs)
 
+
+                    {
+                        <div class="book-card">
+                            <!-- Assuming `CoverImageUrl` exists in your model -->
+                            <div class="book-info">
+                                <h4 class="book-title">@club.name</h4>
+                                <!-- Assuming `Rating` exists in your model -->
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        }
         <div class="updates">
             <div class="updates-header">
                 <h3>UPDATES</h3>
@@ -183,52 +180,27 @@
         </div>
     </div>
 
-
     <!-- Books Section -->
-    <div class="books-section">
+    @* <div class="books-section">
         <h3>Popular and New Books</h3>
         <div class="books-grid">
-            <div class="book-card">
-                <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f" alt="Book cover"
-                    class="book-cover">
-                <div class="book-info">
-                    <h4 class="book-title">The Midnight Library</h4>
-                    <p class="book-author">Matt Haig</p>
-                    <div class="book-rating">★★★★☆ 4.2</div>
+            @foreach (var book in allBooks)
+            {
+                <div class="book-card">
+                    <img src="" alt="Book cover" class="book-cover">
+                    <!-- Assuming `CoverImageUrl` exists in your model -->
+                    <div class="book-info">
+                        <h4 class="book-title">@book.Title</h4>
+                        <p class="book-author">@book.Author</p>
+                        <div class="book-rating">★★★★☆ </div>
+                        <!-- Assuming `Rating` exists in your model -->
+                    </div>
                 </div>
-            </div>
-            <div class="book-card">
-                <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e" alt="Book cover"
-                    class="book-cover">
-                <div class="book-info">
-                    <h4 class="book-title">Project Hail Mary</h4>
-                    <p class="book-author">Andy Weir</p>
-                    <div class="book-rating">★★★★★ 4.8</div>
-                </div>
-            </div>
-            <div class="book-card">
-                <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19" alt="Book cover"
-                    class="book-cover">
-                <div class="book-info">
-                    <h4 class="book-title">Dune</h4>
-                    <p class="book-author">Frank Herbert</p>
-                    <div class="book-rating">★★★★☆ 4.3</div>
-                </div>
-            </div>
-            <div class="book-card">
-                <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e" alt="Book cover"
-                    class="book-cover">
-                <div class="book-info">
-                    <h4 class="book-title">Tomorrow Will Be Different</h4>
-                    <p class="book-author">Sarah McBride</p>
-                    <div class="book-rating">★★★★☆ 4.1</div>
-                </div>
-            </div>
+            }
         </div>
-    </div>
-
-
+    </div> *@
 </div>
+
 <aside class="sidebar">
     <div class="awards-banner">
         <h2>Goodreads Choice Awards 2024</h2>

@@ -68,6 +68,7 @@ public class BookModel : PageModel
                     book.review_id = review_id;
                     Books.Add(book);
                 }
+                ViewData["AllBooks"] = Books;
                 count = Books.Count;
             }
             catch (Exception ex)
