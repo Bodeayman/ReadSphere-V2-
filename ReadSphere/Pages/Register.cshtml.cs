@@ -45,7 +45,6 @@ public class Register : PageModel
         {
             Random random = new();
 
-            // Generate a random integer between 0 and 100 (exclusive)
             int randomNumber = random.Next(0, 10000);
             string query = "insert into [User]  values (@id, @name, @email, @password, 'no_image', 0)";
 

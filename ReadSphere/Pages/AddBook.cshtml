@@ -4,35 +4,49 @@
     ViewData["Title"] = "Add Book";
 }
 
-<h2>Add Book</h2>
+@if (Request.Cookies["is_admin"] == "admin")
+{
 
-<form method="post">
-    @* <div>
-        <label asp-for="Book.Title"></label>
-        <input asp-for="Book.Title" />
-    </div>
-    <div>
-        <label asp-for="Book.Author"></label>
-        <input asp-for="Book.Author" />
-    </div>
-    <div>
-        <label asp-for="Book.Publisher"></label>
-        <input asp-for="Book.Publisher" />
-    </div>
-    <div>
-        <label asp-for="Book.Language"></label>
-        <input asp-for="Book.Language" />
-    </div>
-    <div>
-        <label asp-for="Book.cover_image"></label>
-        <input asp-for="Book.cover_image" />
-    </div>
-    <div>
-        <label asp-for="Book.review_id"></label>
-        <input asp-for="Book.review_id" />
-    </div> *@
-    <button type="submit">Add Book</button>
-</form>
+    <form method="post">
+        <div class="container mt-5">
+            <h2>Add Book</h2>
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Author" class="form-label"></label>
+                    <input asp-for="Author" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Publisher" class="form-label"></label>
+                    <input asp-for="Publisher" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Language" class="form-label"></label>
+                    <input asp-for="Language" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="cover_image" class="form-label"></label>
+                    <input asp-for="cover_image" type="file" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="review_id" class="form-label"></label>
+                    <input asp-for="review_id" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">Add Book</button>
+            </form>
+        </div>
+
+    </form>
+}
+else
+{
+    <h2>Access Denied ,Please Sign in</h2>
+}
+
+
 
 @* @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
