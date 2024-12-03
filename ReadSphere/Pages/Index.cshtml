@@ -6,6 +6,13 @@
 <link rel="stylesheet" href="~/css/home.css">
 
 <div>
+    @if (Request.Cookies["User"] != null)
+    {
+        <p>
+            Welcome again Your signed in
+        </p>
+    }
+
     <div class="reading-widget">
         <div class="reading-status">
             <h3>What are you reading?</h3>
@@ -54,9 +61,13 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-success">
-                Add New Book
-            </button>
+            @if (Request.Cookies["is_admin"] == "admin")
+            {
+                <button class="btn btn-success">
+                    Add New Book
+                </button>
+            }
+
         </div>
         <!-- Carousel Section -->
         <div class="carousel-section">
@@ -135,12 +146,16 @@
                     </button>
                 </div>
             </div>
-            <button class="btn btn-primary">
-                Add New Note
-            </button>
-            <button class="btn btn-primary">
-                Add New Quote
-            </button>
+            @if (Request.Cookies["User"] != null)
+            {
+                <button class="btn btn-primary">
+                    Add New Note
+                </button>
+                <button class="btn btn-primary">
+                    Add New Quote
+                </button>
+            }
+
         </div>
         <div class="reading-challenge">
             <h3> My Reading Goals</h3>

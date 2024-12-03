@@ -4,15 +4,21 @@ using System.Threading.Tasks;
 
 public class AddBookModel : PageModel
 {
-    private readonly DataContext _context;
 
-    public AddBookModel(DataContext context)
+
+    public class Book
     {
-        _context = context;
-    }
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
 
-    [BindProperty]
-    public Book Book { get; set; }
+        public string Publisher { get; set; }
+        public string Language { get; set; }
+
+        public string cover_image { get; set; }
+
+        public string review_id { get; set; }
+    }
 
     public void OnGet()
     {
@@ -25,9 +31,7 @@ public class AddBookModel : PageModel
             return Page();
         }
 
-        _context.Books.Add(Book);
-        await _context.SaveChangesAsync();
-
+        //No more orm code
         return RedirectToPage("/Index");
     }
 }

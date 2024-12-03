@@ -1,5 +1,5 @@
 ﻿@page
-@model ReadSphere.Pages.Register
+@model Register
 
 @{
     Layout = null;
@@ -23,24 +23,25 @@
                     <p>Meet your next favorite book</p>
                 </div>
 
-                <form id="registerForm" class="register-form">
+                <form id="registerForm" class="register-form" method="post">
                     <h2>Sign Up</h2>
 
                     <div class="form-group">
-                        <input type="text" id="name" required placeholder="Name">
+                        <input type="text" id="name" asp-for="name" required placeholder="Name">
                     </div>
 
                     <div class="form-group">
-                        <input type="email" id="email" required placeholder="Email">
+                        <input type="email" id="email" asp-for="email" required placeholder="Email">
                     </div>
 
                     <div class="form-group">
-                        <input type="password" id="password" required placeholder="Password">
+                        <input type="password" id="password" asp-for="password" required placeholder="Password">
                         <small>At least 8 characters</small>
                     </div>
 
                     <div class="form-group">
-                        <input type="password" id="confirmPassword" required placeholder="Confirm password">
+                        <input type="password" id="confirmPassword" asp-for="confirmpassword" required
+                            placeholder="Confirm password">
                     </div>
 
                     <button type="submit" class="signup-btn">Sign up</button>
