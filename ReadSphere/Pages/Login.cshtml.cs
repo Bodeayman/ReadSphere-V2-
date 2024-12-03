@@ -20,6 +20,8 @@ public class Login : PageModel
 
     public string? ErrorMessage { get; set; }
     public bool is_admin { get; set; }
+    public String user_id { get; set; }
+
 
     public void OnGet()
     {
@@ -55,6 +57,15 @@ public class Login : PageModel
         HttpOnly = true,
         Secure = true
     });
+            Response.Cookies.Append(
+"user_id",
+user_id,
+new CookieOptions
+{
+    Expires = DateTimeOffset.Now.AddHours(1),
+    HttpOnly = true,
+    Secure = true
+});
 
             return RedirectToPage("Index");
         }
@@ -89,6 +100,8 @@ public class Login : PageModel
                     userRow = dataTable.Rows[0];
                     Console.WriteLine($"Is_Admin value from database: {userRow["Is_Admin"]}");
                     is_admin = Convert.ToBoolean(userRow["Is_Admin"]);
+                    user_id = Convert.ToString(userRow["User_Id"]);
+
                     isValid = true;
                 }
             }

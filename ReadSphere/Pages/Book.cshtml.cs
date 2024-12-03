@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ public class BookModel : PageModel
 {
     public List<Book> Books { get; set; }
     public int count { get; set; }
+    public int BookId { get; set; }
 
 
     public class Book
@@ -75,5 +77,74 @@ public class BookModel : PageModel
         }
     }
 
+    public IActionResult OnPost(int BookId)
+    {
+        Console.WriteLine($"Received BookId: {BookId}");
+        // Retrieve the user ID from the cookie (replace "UserId" with your actual cookie name)
+        string userId = Request.Cookies["user_id"]; // Adjust cookie name accordingly
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            // Handle the case where the user ID is not available in the cookie
+            // For example, redirect to the login page or show an error
+            return RedirectToPage("/Login");
+        }
+
+        // Now you have both the user ID from the cookie and the book ID from the form
+        // Proceed with the logic for adding the book for the user
+
+        // Example: Save the book with the userId
+        bool success = AddBookToUser(Convert.ToInt32(userId), BookId);
+
+        if (success)
+        {
+            // Redirect to a confirmation page or show a success message
+            return RedirectToPage("/Index");
+        }
+
+        // If there was an error, handle it (e.g., show an error message)
+        return Page();
+    }
+
+    // A sample method to simulate adding a book to the user's collection
+    private bool AddBookToUser(int userId, int bookId)
+    {
+        bool success = false;
+
+        using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
+        {
+            string query = "INSERT INTO BooksPossess (OwnerId, BookId) VALUES (@UserId, @BookId)";
+            SqlCommand command = new SqlCommand(query, connection);
+
+            // Ensure the book exists in the BOOK table first
+            string checkBookExistsQuery = "SELECT COUNT(*) FROM dbo.BOOK WHERE Book_Id = @BookId";
+            SqlCommand checkCommand = new SqlCommand(checkBookExistsQuery, connection);
+            checkCommand.Parameters.AddWithValue("@BookId", bookId);
+
+            connection.Open();
+            int bookCount = (int)checkCommand.ExecuteScalar();
+            Console.WriteLine($"Book count: {bookCount}"); // Debug log
+
+
+            if (bookCount > 0)
+            {
+                // The book exists, now insert into the BooksPossession table
+                command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@BookId", bookId);
+                command.ExecuteNonQuery();
+                success = true;
+            }
+            else
+            {
+                // Handle the error, book not found
+                Console.WriteLine("The specified book does not exist.");
+            }
+        }
+
+        return success;
+    }
 
 }
+
+
+

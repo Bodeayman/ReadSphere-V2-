@@ -22,8 +22,15 @@
 
                         <!-- View Details Button -->
                         <a class="btn btn-primary" asp-page="./Book/Details" asp-route-id="@book.Id">View Details</a>
+                        <form method="post">
+                            <input type="hidden" name="BookId" value="@book.Id" />
+                            <input type="submit" value="Add the book" class="btn btn-primary">
+                        </form>
                     </div>
+
                 </div>
+
+
             </article>
 
         }
