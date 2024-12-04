@@ -1,0 +1,29 @@
+﻿@page
+@model AddNoteModel
+@{
+    ViewData["Title"] = "Add Note";
+}
+
+@if (Request.Cookies["User"] != null)
+{
+    <form method="post">
+        <div class="container mt-5">
+            <h2>Add Note</h2>
+
+            <div class="mb-3">
+                <label asp-for="note_text" class="form-label"></label>
+                <textarea asp-for="note_text" class="form-control"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="page_number" class="form-label"></label>
+                <input asp-for="page_number" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Note</button>
+        </div>
+    </form>
+}
+else
+{
+    <h2>Access Denied, Please Sign in</h2>
+}

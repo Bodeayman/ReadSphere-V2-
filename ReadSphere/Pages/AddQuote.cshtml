@@ -1,0 +1,28 @@
+﻿@page
+@model AddQuoteModel
+@{
+    ViewData["Title"] = "Add Quote";
+}
+
+@if (Request.Cookies["User"] != null)
+{
+    <form method="post">
+        <div class="container mt-5">
+            <h2>Add Quote</h2>
+            <div class="mb-3">
+                <label asp-for="quote_text" class="form-label"></label>
+                <textarea asp-for="quote_text" class="form-control"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="page_number" class="form-label"></label>
+                <input asp-for="page_number" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Quote</button>
+        </div>
+    </form>
+}
+else
+{
+    <h2>Access Denied, Please Sign in</h2>
+}

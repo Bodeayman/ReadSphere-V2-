@@ -125,12 +125,12 @@
 
             @if (Request.Cookies["User"] != null)
             {
-                <button class="btn btn-primary">
+                <a class="btn btn-primary" href="/AddNote">
                     Add New Note
-                </button>
-                <button class="btn btn-primary">
+                </a>
+                <a class="btn btn-primary" href="/AddQuote">
                     Add New Quote
-                </button>
+                </a>
             }
         </div>
 
@@ -168,7 +168,11 @@
                         </div>
                     }
                 </div>
-
+                @if (Request.Cookies["is_admin"] == "admin")
+                {
+                    <a class="btn btn-primary" href="/AddClub">
+                        Add a New club</a>
+                }
             </div>
         }
         <div class="updates">
@@ -180,25 +184,7 @@
         </div>
     </div>
 
-    <!-- Books Section -->
-    @* <div class="books-section">
-        <h3>Popular and New Books</h3>
-        <div class="books-grid">
-            @foreach (var book in allBooks)
-            {
-                <div class="book-card">
-                    <img src="" alt="Book cover" class="book-cover">
-                    <!-- Assuming `CoverImageUrl` exists in your model -->
-                    <div class="book-info">
-                        <h4 class="book-title">@book.Title</h4>
-                        <p class="book-author">@book.Author</p>
-                        <div class="book-rating">★★★★☆ </div>
-                        <!-- Assuming `Rating` exists in your model -->
-                    </div>
-                </div>
-            }
-        </div>
-    </div> *@
+
 </div>
 
 <aside class="sidebar">
