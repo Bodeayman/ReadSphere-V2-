@@ -1,28 +1,75 @@
-@page "{id:int}"
+@page
 @model BookDetailsModel
 @{
-    ViewData["Title"] = Model.Book.Title;
+    ViewData["Title"] = "Books Details";
 }
 
-<h1>@Model.Book.Title</h1>
-<p><strong>Author:</strong> @Model.Book.Author</p>
-<p><strong>Description:</strong> @Model.Book.Description</p>
 
-<h2>Reviews</h2>
-<ul>
-    @foreach (var review in Model.Book.Reviews)
+<div class="container mt-5">
+    <h1 class="text-center">Book Details</h1>
+
+    @if (Model.book != null)
     {
-    <li>@review</li>
-    }
-</ul>
+        <div class="card">
+            <div class="card-header">
+                <h3>@Model.book.Title</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Book Author -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="author" class="font-weight-bold">Author</label>
+                            <input type="text" class="form-control" id="author" value="@Model.book.Author" readonly />
+                        </div>
+                    </div>
 
-<h2>Quotes</h2>
-<ul>
-    @foreach (var quote in Model.Book.Quotes)
+                    <!-- Book Publisher -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="publisher" class="font-weight-bold">Publisher</label>
+                            <input type="text" class="form-control" id="publisher" value="@Model.book.Publisher" readonly />
+                        </div>
+                    </div>
+
+                    <!-- Book Language -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="language" class="font-weight-bold">Language</label>
+                            <input type="text" class="form-control" id="language" value="@Model.book.Language" readonly />
+                        </div>
+                    </div>
+
+                    <!-- Book Review ID -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="reviewId" class="font-weight-bold">Review ID</label>
+                            <input type="text" class="form-control" id="reviewId" value="@Model.book.review_id" readonly />
+                        </div>
+                    </div>
+
+                    <!-- Book Cover Image -->
+                    @if (!string.IsNullOrEmpty(Model.book.cover_image))
+                    {
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="coverImage" class="font-weight-bold">Cover Image</label>
+                                <img src="@Model.book.cover_image" class="img-fluid" alt="Book Cover" id="coverImage" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="form-group mt-4">
+                    <a href="/Book" class="btn btn-primary">Back to Book List</a>
+                </div>
+            </div>
+        </div>
+    }
+    else
     {
-    <li>@quote</li>
+        <div class="alert alert-danger">
+            <strong>Warning!</strong> Book details not found.
+        </div>
     }
-</ul>
-
-<h2>Notes</h2>
-<textarea placeholder="Add your notes here..." rows="5" cols="50"></textarea>
+</div>

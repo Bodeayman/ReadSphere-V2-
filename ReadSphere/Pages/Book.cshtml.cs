@@ -81,33 +81,24 @@ public class BookModel : PageModel
     public IActionResult OnPost(int BookId)
     {
         Console.WriteLine($"Received BookId: {BookId}");
-        // Retrieve the user ID from the cookie (replace "UserId" with your actual cookie name)
-        string userId = Request.Cookies["user_id"]; // Adjust cookie name accordingly
+        string userId = Request.Cookies["user_id"];
 
         if (string.IsNullOrEmpty(userId))
         {
-            // Handle the case where the user ID is not available in the cookie
-            // For example, redirect to the login page or show an error
             return RedirectToPage("/Login");
         }
 
-        // Now you have both the user ID from the cookie and the book ID from the form
-        // Proceed with the logic for adding the book for the user
 
-        // Example: Save the book with the userId
         bool success = AddBookToUser(Convert.ToInt32(userId), BookId);
 
         if (success)
         {
-            // Redirect to a confirmation page or show a success message
             return RedirectToPage("/Index");
         }
 
-        // If there was an error, handle it (e.g., show an error message)
         return Page();
     }
 
-    // A sample method to simulate adding a book to the user's collection
     private bool AddBookToUser(int userId, int bookId)
     {
         bool success = false;

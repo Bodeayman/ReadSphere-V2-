@@ -7,36 +7,41 @@
 <h1>Books</h1>
 
 <div class="book-list">
-    @if (Model.Books != null && Model.Books.Any())
+    @if (Request.Cookies["User"] != null)
     {
-        foreach (var book in Model.Books)
+        @if (Model.Books != null && Model.Books.Any())
         {
-            <article class="book-item">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body">
-                        <!-- Book Title -->
-                        <h3 class="book-title card-title">@book.Title</h3>
+            foreach (var book in Model.Books)
+            {
+                <article class="book-item">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <!-- Book Title -->
+                            <h3 class="book-title card-title">@book.Title</h3>
 
-                        <!-- Book Author -->
-                        <p class="book-author text-muted">by @book.Author</p>
+                            <!-- Book Author -->
+                            <p class="book-author text-muted">by @book.Author</p>
 
-                        <!-- View Details Button -->
-                        <a class="btn btn-primary" asp-page="./Book/Details" asp-route-id="@book.Id">View Details</a>
-                        <form method="post">
-                            <input type="hidden" name="BookId" value="@book.Id" />
-                            <input type="submit" value="Add the book" class="btn btn-primary">
-                        </form>
+                            <!-- View Details Button -->
+                            <a class="btn btn-primary" href="/BookDetails?itemid=@book.Id">View Details</a>
+                            <form method="post">
+                                <input type="hidden" name="BookId" value="@book.Id" />
+                                <input type="submit" value="Add the book" class="btn btn-primary">
+                            </form>
+
+                        </div>
+
                     </div>
 
-                </div>
 
+                </article>
 
-            </article>
-
+            }
+        }
+        else
+        {
+            <p>No books available.</p>
         }
     }
-    else
-    {
-        <p>No books available.</p>
-    }
+
 </div>

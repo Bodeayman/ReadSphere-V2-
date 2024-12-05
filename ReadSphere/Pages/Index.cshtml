@@ -6,6 +6,7 @@
 }
 <link rel="stylesheet" href="~/css/home.css">
 
+
 <div>
     <div class="reading-widget">
         <div class="reading-status">
@@ -31,7 +32,10 @@
                             <div class="book-info">
                                 <h4 class="book-title">@book.Title</h4>
                                 <p class="book-author">@book.Author</p>
-                                <div class="book-rating">★★★★☆ @book.review_id</div>
+                                <a class="book-rating" href="/AddReview?itemid=@book.Id">
+                                    ★★★★☆ @book.review_id
+                                </a>
+
                                 <!-- Assuming `Rating` exists in your model -->
                             </div>
                         </div>

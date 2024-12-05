@@ -1,71 +1,83 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
 // Book model definition
-public class Book
-{
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public string Description { get; set; }
-    public List<string> Reviews { get; set; }
-    public List<string> Quotes { get; set; }
-}
 
-// Repository interface
-public interface IBookRepository
-{
-    Task<Book> GetBookByIdAsync(int id);
-}
 
-public class BookRepository : IBookRepository
-{
-    private readonly List<Book> _books = new List<Book>
-    {
-        new Book
-        {
-            Id = 1,
-            Title = "The Alchemist",
-            Author = "Ayman",
-            Description = "A philosophical story about following your dreams.",
-            Reviews = new List<string> { "Inspiring!", "A must-read for dreamers." },
-            Quotes = new List<string> { "And, when you want something, all the universe conspires in helping you to achieve it." }
-        },
-        new Book
-        {
-            Id = 2,
-            Title = "1984",
-            Author = "Dsoqi",
-            Description = "A dystopian novel about totalitarianism.",
-            Reviews = new List<string> { "Chilling and thought-provoking.", "A timeless classic." },
-            Quotes = new List<string> { "Big Brother is watching you." }
-        }
-        // Add more books as needed
-    };
 
-    public Task<Book> GetBookByIdAsync(int id)
-    {
-        var book = _books.FirstOrDefault(b => b.Id == id);
-        return Task.FromResult(book);
-    }
-}
 
 // Page model for book details
 public class BookDetailsModel : PageModel
 {
-    private readonly IBookRepository _bookRepository;
+    public Book book { get; set; }
 
-    public Book Book { get; private set; } // Ensure this is defined only once
-
-    public BookDetailsModel(IBookRepository bookRepository)
+    public class Book
     {
-        _bookRepository = bookRepository;
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public string? Publisher { get; internal set; }
+        public string review_id { get; set; }
+        public string? cover_image { get; internal set; }
+        public string? Language { get; internal set; }
     }
+    public int ItemId { get; set; }
 
-    public async Task OnGetAsync(int id)
+    public void OnGet(int itemid)
     {
-        Book = await _bookRepository.GetBookByIdAsync(id);
+        ItemId = itemid;
+        book = new Book();
+
+        string query = " select* from book where Book_Id  = @item";
+
+        using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
+        {
+            // SQL query to insert a worker into the Workers table
+
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+            dataAdapter.SelectCommand.Parameters.AddWithValue("@item", itemid);
+
+            DataTable dataTable = new DataTable();
+
+            try
+            {
+                // Open the connection
+                connection.Open();
+
+                // Fill the DataTable with the data from the database
+                dataAdapter.Fill(dataTable);
+
+                // Process the data from the DataTable
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    int Id = Convert.ToInt32(row["Book_Id"]);
+                    string title = row["Title"].ToString();
+
+                    string Author = row["Author_Name"].ToString() ?? "";
+                    string publisher = row["Publisher"].ToString() ?? "Unknown";
+                    string Language = row["Language"].ToString() ?? "Unknown";
+                    string cover_image = row["Cover_Image"].ToString() ?? "Unknown";
+                    string review_id = row["Review_Id"].ToString() ?? "Unknown";
+                    Console.WriteLine(Language);
+                    book.Id = Id;
+                    book.Title = title;
+                    book.Author = Author;
+                    book.Publisher = publisher;
+                    book.Language = Language;
+                    book.cover_image = cover_image;
+                    book.review_id = review_id;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+
+        }
     }
 }
