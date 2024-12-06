@@ -1,0 +1,26 @@
+﻿@page
+@model CreateCategoryModel
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+
+<form method="post" class="my-5">
+    <h2>Create New Category</h2>
+
+    <div class="container mt-4">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Category Name</label>
+            <input asp-for="Name" class="form-control" placeholder="Enter category name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Category Description</label>
+            <textarea asp-for="Description" class="form-control" placeholder="Enter category description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Category</button>
+    </div>
+</form>

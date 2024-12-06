@@ -2,7 +2,8 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-    @* var allBooks = ViewData["AllBooks"] as List<Book>; *@
+    List<string> images = ["/uploads/OIP.jpeg", "/uploads/OIP (1).jpeg", "/uploads/hello.webp", "/uploads/hello2.jpg"];
+    int counter = 0;
 }
 <link rel="stylesheet" href="~/css/home.css">
 
@@ -26,8 +27,10 @@
 
 
                     {
+
                         <div class="book-card">
-                            <img src="@book.cover_image" alt="Book cover" class="book-cover">
+                            <img src="@images[(counter++)%4]" alt="Book cover" class="book-cover">
+
                             <!-- Assuming `CoverImageUrl` exists in your model -->
                             <div class="book-info">
                                 <h4 class="book-title">@book.Title</h4>
@@ -138,6 +141,19 @@
             }
         </div>
 
+    </div>
+
+
+</div>
+
+<aside class="sidebar">
+    @* <div class="awards-banner">
+        <h2>Goodreads Choice Awards 2024</h2>
+        <p>Pick your favorite books of the year!</p>
+        <button class="vote-btn">Cast Your Vote</button>
+        <p class="vote-count">3,183,424 Votes Cast</p>
+    </div> *@
+    <div class="books-section">
         <div class="reading-challenge">
             <h3> My Reading Goals</h3>
             <div class="challenge-stats">
@@ -152,51 +168,69 @@
                     <p class="percentage">0/5 (0%)</p>
                 </div>
             </div>
-            <button class="view-challenge">View Challenge</button>
-        </div>
-        @if (Request.Cookies["User"] != null)
-        {
-            <div class="books-section">
-                <h3>My Clubs</h3>
-                <div class="books-grid">
-                    @foreach (var club in Model.myclubs)
-
-
-                    {
-                        <div class="book-card">
-                            <!-- Assuming `CoverImageUrl` exists in your model -->
-                            <div class="book-info">
-                                <h4 class="book-title">@club.name</h4>
-                                <!-- Assuming `Rating` exists in your model -->
-                            </div>
-                        </div>
-                    }
+            <h3> My Daily Goals</h3>
+            <div class="challenge-stats">
+                <div class="year">2024</div>
+                <div class="stats">
+                    <h2>0</h2>
+                    <p>books completed</p>
+                    <p class="behind">4 books behind schedule</p>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 0%"></div>
+                    </div>
+                    <p class="percentage">0/5 (0%)</p>
                 </div>
-                @if (Request.Cookies["is_admin"] == "admin")
+            </div>
+            <div style="display:flex;flex-direction:row;">
+                <button class="view-challenge mx-3">View Challenge</button>
+                <a href="/AddGoals" class="btn btn-success">Add More Goals</a>
+            </div>
+        </div>
+
+    </div>
+    @if (Request.Cookies["User"] != null)
+    {
+        <div class="books-section">
+            <h3>My Clubs</h3>
+            <div class="books-grid">
+                @foreach (var club in Model.myclubs)
+
+
                 {
-                    <a class="btn btn-primary" href="/AddClub">
-                        Add a New club</a>
+                    <div class="book-card">
+                        <!-- Assuming `CoverImageUrl` exists in your model -->
+                        <div class="book-info">
+                            <h4 class="book-title">@club.name</h4>
+                            <!-- Assuming `Rating` exists in your model -->
+                        </div>
+                    </div>
                 }
             </div>
-        }
-        <div class="updates">
+            @if (Request.Cookies["is_admin"] == "admin")
+            {
+                <a class="btn btn-primary" href="/AddClub">
+                    Add a New club</a>
+            }
+        </div>
+    }
+    @if (Request.Cookies["User"] != null)
+    {
+        <div class="books-section">
+            <h3>Categories</h3>
+
+
+            <a class="btn btn-primary" href="/AddCategory">Add a New Categroy</a>
+
+        </div>
+    }
+    <div class="books-section">
+        <div class="updates my-5">
             <div class="updates-header">
                 <h3>UPDATES</h3>
                 <button class="customize">⚙️ Customize</button>
             </div>
             <p class="no-updates">No More Updates</p>
         </div>
-    </div>
-
-
-</div>
-
-<aside class="sidebar">
-    <div class="awards-banner">
-        <h2>Goodreads Choice Awards 2024</h2>
-        <p>Pick your favorite books of the year!</p>
-        <button class="vote-btn">Cast Your Vote</button>
-        <p class="vote-count">3,183,424 Votes Cast</p>
     </div>
 </aside>
 

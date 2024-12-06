@@ -1,0 +1,39 @@
+﻿@page
+@model ReadSphere.Pages.CategoriesModel
+@{
+    ViewData["Title"] = "Categories";
+}
+<div class="my-5">
+    <h1>Categories</h1>
+
+    @if (Request.Cookies["User"] != null)
+    {
+        <p>This section will show the categories available in the university.</p>
+
+        <div class="row">
+            @foreach (var cat in Model.Cats)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4" style="max-width: 300px;">
+                        <div class="card-body">
+                            <h5 class="card-title">@cat.Name</h5>
+                            <p class="card-text">@cat.Desc</p>
+                        </div>
+                        <div class="card-body">
+                            <h5>Books</h5>
+                        </div>
+
+                        <form method="post">
+                            <input type="hidden" name="ClubId" value="@cat.Id" />
+                            <input type="submit" value="Add a book to category" class="btn btn-primary">
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>You have to sign in to view the categories.</p>
+    }
+</div>

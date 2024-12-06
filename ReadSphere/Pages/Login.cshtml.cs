@@ -9,7 +9,6 @@ using System.Data;
 public class Login : PageModel
 {
 
-    // Bind properties for form inputs
     [BindProperty]
     [Required(ErrorMessage = "Name is required.")]
     public string? email { get; set; }
@@ -31,14 +30,11 @@ public class Login : PageModel
     {
         if (!ModelState.IsValid)
         {
-            // Form validation failed
             email = "Invalid";
             return Page();
         }
-        // Validate user credentials against the database
         if (ValidateUser(email!, password!))
         {
-            // If successful, create a session or cookie and redirect
             Response.Cookies.Append(
                 "User",
                 email!,

@@ -10,12 +10,17 @@
         <div class="container mt-5">
             <h2>Add Club</h2>
             <div class="mb-3">
-                <label asp-for="club_name" class="form-label"></label>
+                <label asp-for="club_name" class="form-label">Club Name</label>
                 <input asp-for="club_name" class="form-control" />
+                <span asp-validation-for="club_name" class="text-danger"></span>
+
+
             </div>
             <div class="mb-3">
-                <label asp-for="club_desc" class="form-label"></label>
+                <label asp-for="club_desc" class="form-label">Club Description</label>
                 <textarea asp-for="club_desc" class="form-control"></textarea>
+                <span asp-validation-for="club_desc" class="text-danger"></span>
+
             </div>
             <button type="submit" class="btn btn-primary">Add Club</button>
         </div>

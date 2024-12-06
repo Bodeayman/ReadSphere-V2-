@@ -36,7 +36,6 @@ public class BookDetailsModel : PageModel
 
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
-            // SQL query to insert a worker into the Workers table
 
             SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
             dataAdapter.SelectCommand.Parameters.AddWithValue("@item", itemid);
@@ -45,13 +44,10 @@ public class BookDetailsModel : PageModel
 
             try
             {
-                // Open the connection
                 connection.Open();
 
-                // Fill the DataTable with the data from the database
                 dataAdapter.Fill(dataTable);
 
-                // Process the data from the DataTable
                 foreach (DataRow row in dataTable.Rows)
                 {
                     int Id = Convert.ToInt32(row["Book_Id"]);

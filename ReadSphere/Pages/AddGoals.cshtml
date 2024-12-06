@@ -1,0 +1,43 @@
+﻿@page
+@model AddGoalsModel
+@{
+    ViewData["Title"] = "Add Goals";
+}
+
+
+@if (Request.Cookies["User"] != null)
+{
+    <form method="post">
+        <div class="container mt-5">
+            <h2>Add Reading Goals</h2>
+
+            <div class="mb-3">
+                <label asp-for="noti_time" class="form-label">Notification Time</label>
+                <textarea asp-for="noti_time" class="form-control"></textarea>
+                <span asp-validation-for="noti_time" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="target_pages" class="form-label">Target Pages</label>
+                <input asp-for="target_pages" class="form-control" />
+                <span asp-validation-for="target_pages" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <select asp-for="BookID">
+            @foreach (var book in Model.bookslist)
+            {
+                        <option value="@book.Id">@book.Title</option>
+            }
+                </select>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Note</button>
+        </div>
+    </form>
+}
+else
+{
+    <h2>Access Denied, Please Sign in</h2>
+}

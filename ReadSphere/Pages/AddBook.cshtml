@@ -10,33 +10,43 @@
     <form method="post">
         <div class="container mt-5">
             <h2>Add Book</h2>
-            <form method="post">
-                <div class="mb-3">
-                    <label asp-for="Title" class="form-label"></label>
-                    <input asp-for="Title" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label asp-for="Author" class="form-label"></label>
-                    <input asp-for="Author" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label asp-for="Publisher" class="form-label"></label>
-                    <input asp-for="Publisher" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label asp-for="Language" class="form-label"></label>
-                    <input asp-for="Language" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label asp-for="cover_image" class="form-label"></label>
-                    <input asp-for="cover_image" type="file" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label asp-for="review_id" class="form-label"></label>
-                    <input asp-for="review_id" class="form-control" />
-                </div>
-                <button type="submit" class="btn btn-primary">Add Book</button>
-            </form>
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" id="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Author" class="form-label"></label>
+                <input asp-for="Author" id="Author" class="form-control" />
+                <span asp-validation-for="Author" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Publisher" class="form-label"></label>
+                <input asp-for="Publisher" id="Publisher" class="form-control" />
+                <span asp-validation-for="Publisher" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Language" class="form-label"></label>
+                <input asp-for="Language" id="Language" class="form-control" />
+                <span asp-validation-for="Language" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="cover_image" class="form-label">Cover Image</label>
+                <input asp-for="cover_image" type="file" id="cover_image" class="form-control" />
+                <span asp-validation-for="cover_image" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="review_id" class="form-label">Review</label>
+                <input asp-for="review_id" id="review_id" class="form-control" />
+                <span asp-validation-for="review_id" class="text-danger"></span>
+
+            </div>
+            <button type="submit" class="btn btn-primary">Add Book</button>
         </div>
 
     </form>
@@ -48,6 +58,9 @@ else
 
 
 
-@* @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-} *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script type="module" src="~/js/addingBook.js"></script>

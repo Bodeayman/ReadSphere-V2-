@@ -46,7 +46,6 @@ public class IndexModel : PageModel
 
     using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
     {
-      // SQL query to insert a worker into the Workers table
 
       Console.WriteLine(Convert.ToInt32(Request.Cookies["user_id"]));
       SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
@@ -56,13 +55,10 @@ public class IndexModel : PageModel
 
       try
       {
-        // Open the connection
         connection.Open();
 
-        // Fill the DataTable with the data from the database
         dataAdapter.Fill(dataTable);
 
-        // Process the data from the DataTable
         foreach (DataRow row in dataTable.Rows)
         {
           int Id = Convert.ToInt32(row["Book_Id"]);
@@ -98,13 +94,10 @@ public class IndexModel : PageModel
 
       try
       {
-        // Open the connection
         connection.Open();
 
-        // Fill the DataTable with the data from the database
         dataAdapter.Fill(dataTable);
 
-        // Process the data from the DataTable
         foreach (DataRow row in dataTable.Rows)
         {
           string desc = Convert.ToString(row["club_description"]);

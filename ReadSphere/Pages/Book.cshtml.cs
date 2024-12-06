@@ -30,25 +30,17 @@ public class BookModel : PageModel
 
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
-            // SQL query to insert a worker into the Workers table
             string query = "select * from BOOK";
-
             SqlCommand cmd = new(query, connection);
-            // Create a DataAdapter to fill the DataTable
             SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
-
-            // Create a DataTable to hold the data
             DataTable dataTable = new DataTable();
 
             try
             {
-                // Open the connection
                 connection.Open();
 
-                // Fill the DataTable with the data from the database
                 dataAdapter.Fill(dataTable);
 
-                // Process the data from the DataTable
                 foreach (DataRow row in dataTable.Rows)
                 {
                     int Id = Convert.ToInt32(row["Book_Id"]);
@@ -120,7 +112,6 @@ public class BookModel : PageModel
 
             if (bookCount > 0)
             {
-                // The book exists, now insert into the BooksPossession table
                 command.Parameters.AddWithValue("@UserId", userId);
                 command.Parameters.AddWithValue("@BookId", bookId);
                 command.ExecuteNonQuery();
@@ -128,7 +119,6 @@ public class BookModel : PageModel
             }
             else
             {
-                // Handle the error, book not found
                 Console.WriteLine("The specified book does not exist.");
             }
         }

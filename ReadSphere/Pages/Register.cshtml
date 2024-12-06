@@ -28,20 +28,27 @@
 
                     <div class="form-group">
                         <input type="text" id="name" asp-for="name" required placeholder="Name">
+                        <span asp-validation-for="name" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <input type="email" id="email" asp-for="email" required placeholder="Email">
+                        <span asp-validation-for="email" class="text-danger"></span>
+
                     </div>
 
                     <div class="form-group">
                         <input type="password" id="password" asp-for="password" required placeholder="Password">
                         <small>At least 8 characters</small>
+                        <span asp-validation-for="password" class="text-danger"></span>
+
                     </div>
 
                     <div class="form-group">
                         <input type="password" id="confirmPassword" asp-for="confirmpassword" required
                             placeholder="Confirm password">
+                        <span asp-validation-for="confirmpassword" class="text-danger"></span>
+
                     </div>
 
                     <button type="submit" class="signup-btn">Sign up</button>

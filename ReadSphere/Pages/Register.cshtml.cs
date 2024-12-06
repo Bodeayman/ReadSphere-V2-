@@ -9,7 +9,6 @@ using System.Data;
 public class Register : PageModel
 {
 
-    // Bind properties for form inputs
     [BindProperty]
     [Required(ErrorMessage = "Name is required.")]
     public string? email { get; set; }
@@ -35,7 +34,6 @@ public class Register : PageModel
     {
         if (!ModelState.IsValid)
         {
-            // Form validation failed
             email = "Invalid";
             return Page();
         }
@@ -63,7 +61,6 @@ public class Register : PageModel
             }
             catch (Exception ex)
             {
-                // Log the exception (not shown here for brevity)
                 ErrorMessage = "An error occurred while validating your credentials.";
             }
 

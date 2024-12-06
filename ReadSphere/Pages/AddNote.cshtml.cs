@@ -27,11 +27,9 @@ public class AddNoteModel : PageModel
     public void OnGet()
     {
         bookslist = new List<newBook>();
-        //Beware the syntax
 
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
-            // SQL query to insert a worker into the Workers table
             string query = "select Book_id , title from book where book_id  in (select BookId from booksPossess where ownerid = @owner)";
 
             Console.WriteLine(Convert.ToInt32(Request.Cookies["user_id"]));
@@ -41,13 +39,10 @@ public class AddNoteModel : PageModel
             DataTable dataTable = new DataTable();
             try
             {
-                // Open the connection
                 connection.Open();
 
-                // Fill the DataTable with the data from the database
                 dataAdapter.Fill(dataTable);
 
-                // Process the data from the DataTable
                 foreach (DataRow row in dataTable.Rows)
                 {
                     int Id = Convert.ToInt32(row["Book_id"]);
@@ -83,7 +78,6 @@ public class AddNoteModel : PageModel
         }
         string connectionString = "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
-        // SQL query to insert a new book into the BOOK table
         Random random = new();
 
         int randomNumber = random.Next(0, 10000);
@@ -94,9 +88,6 @@ public class AddNoteModel : PageModel
         {
             SqlCommand cmd = new SqlCommand(query, connection);
 
-            // parameters to avoid SQL injection
-            // We need to put the id of the real book here but after adding the quotes
-            // and the notes
             cmd.Parameters.AddWithValue("@book_id", BookID);
             cmd.Parameters.AddWithValue("@id", randomNumber);
 
@@ -119,7 +110,7 @@ public class AddNoteModel : PageModel
             }
         }
 
-        return RedirectToPage("/Index");// redirection to books page
+        return RedirectToPage("/Index");
     }
 
 }

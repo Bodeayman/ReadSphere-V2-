@@ -31,7 +31,6 @@ public class AddBookModel : PageModel
         }
         string connectionString = "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
-        // SQL query to insert a new book into the BOOK table
         Random random = new();
 
         int randomNumber = random.Next(0, 10000);
@@ -42,7 +41,6 @@ public class AddBookModel : PageModel
         {
             SqlCommand cmd = new SqlCommand(query, connection);
 
-            // parameters to avoid SQL injection
             cmd.Parameters.AddWithValue("@Title", Title);
             cmd.Parameters.AddWithValue("@id", randomNumber);
 
@@ -64,6 +62,6 @@ public class AddBookModel : PageModel
             }
         }
 
-        return RedirectToPage("/Book");// redirection to books page
+        return RedirectToPage("/Book");
     }
 }
