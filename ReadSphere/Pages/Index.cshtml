@@ -2,8 +2,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-    List<string> images = ["/uploads/OIP.jpeg", "/uploads/OIP (1).jpeg", "/uploads/hello.webp", "/uploads/hello2.jpg"];
-    int counter = 0;
+
 }
 <link rel="stylesheet" href="~/css/home.css">
 
@@ -29,7 +28,7 @@
                     {
 
                         <div class="book-card">
-                            <img src="@images[(counter++)%4]" alt="Book cover" class="book-cover">
+                            <img src="" alt="Book cover" class="book-cover">
 
                             <!-- Assuming `CoverImageUrl` exists in your model -->
                             <div class="book-info">

@@ -62,6 +62,7 @@ public class Register : PageModel
             catch (Exception ex)
             {
                 ErrorMessage = "An error occurred while validating your credentials.";
+                Console.WriteLine(ex);
             }
 
         }

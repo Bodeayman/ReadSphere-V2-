@@ -16,7 +16,7 @@ public class AddBookModel : PageModel
     public string Language { get; set; }
 
     [BindProperty]
-    public string cover_image { get; set; }
+    public IFormFile cover_image { get; set; }
 
     [BindProperty]
     public string review_id { get; set; }
@@ -29,6 +29,27 @@ public class AddBookModel : PageModel
         {
             return Page();
         }
+        string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+        // Ensure the "uploads" folder exists
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        // Get the original file name
+        string fileName = Path.GetFileName(cover_image.FileName); // Gets the original filename, e.g., "image.png"
+
+        // Full file path where the image will be saved
+        string filePath = Path.Combine(uploadsFolder, fileName);
+
+        // Save the uploaded file to the server (in the "uploads" folder)
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            cover_image.CopyTo(fileStream);  // Saves the file to the specified path
+        }
+        string imageUrl = "uploads/" + fileName;
+
         string connectionString = "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
         Random random = new();
@@ -47,7 +68,7 @@ public class AddBookModel : PageModel
             cmd.Parameters.AddWithValue("@Author", Author);
             cmd.Parameters.AddWithValue("@Publisher", Publisher);
             cmd.Parameters.AddWithValue("@Language", Language);
-            cmd.Parameters.AddWithValue("@CoverImage", cover_image);
+            cmd.Parameters.AddWithValue("@CoverImage", imageUrl);
             cmd.Parameters.AddWithValue("@ReviewId", review_id);
 
             try

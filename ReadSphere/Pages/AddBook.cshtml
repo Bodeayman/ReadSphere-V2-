@@ -7,7 +7,7 @@
 @if (Request.Cookies["is_admin"] == "admin")
 {
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div class="container mt-5">
             <h2>Add Book</h2>
             <div class="mb-3">
@@ -36,7 +36,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="cover_image" class="form-label">Cover Image</label>
-                <input asp-for="cover_image" type="file" id="cover_image" class="form-control" />
+                <input asp-for="cover_image" type="file" id="cover_image" class="form-control" accept="" />
                 <span asp-validation-for="cover_image" class="text-danger"></span>
 
             </div>
