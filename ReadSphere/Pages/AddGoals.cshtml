@@ -13,7 +13,7 @@
 
             <div class="mb-3">
                 <label asp-for="noti_time" class="form-label">Notification Time</label>
-                <textarea asp-for="noti_time" class="form-control"></textarea>
+                <input type="date" asp-for="noti_time" class="form-control"></input>
                 <span asp-validation-for="noti_time" class="text-danger"></span>
 
             </div>
@@ -24,14 +24,20 @@
 
             </div>
             <div class="mb-3">
-                <select asp-for="BookID">
-            @foreach (var book in Model.bookslist)
-            {
-                        <option value="@book.Id">@book.Title</option>
-            }
-                </select>
-
+                <label asp-for="noti_message" class="form-label"></label>
+                <input asp-for="noti_message" class="form-control" type="text" />
+                <span asp-validation-for="noti_message" class="text-danger"></span>
             </div>
+            <div>
+                <select asp-for="BookID" class="form-control">
+                    <option value="">Select a Book</option>
+                    @foreach (var book in Model.bookslist)
+                    {
+                        <option value="@book.Id">@book.Title</option>
+                    }
+                </select>
+            </div>
+
 
             <button type="submit" class="btn btn-primary">Add Note</button>
         </div>

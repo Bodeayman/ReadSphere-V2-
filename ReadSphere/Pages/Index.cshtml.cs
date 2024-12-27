@@ -20,6 +20,16 @@ public class IndexModel : PageModel
 
   [BindProperty]
   public string SearchQuery { get; set; }
+
+
+
+  public class Notification
+  {
+    public string Message { get; set; }
+    public DateTime time { get; set; }
+    public string Title { get; set; }
+    public int pages { get; set; }
+  }
   public class Book
   {
     public int Id { get; set; }
@@ -53,6 +63,12 @@ public class IndexModel : PageModel
     { get; set; }
     public string book { get; set; }
   }
+  //Didn't come yet
+  public List<Notification> ongoing { get; set; }
+
+  // Came
+  public List<Notification> duegoing { get; set; }
+
   public void OnGet(string SearchQuery)
   {
 
@@ -63,12 +79,16 @@ public class IndexModel : PageModel
     myclubs = new List<Club>();
     myquotes = new List<Quote>();
     mynotes = new List<Note>();
+    ongoing = new List<Notification>();
+    duegoing = new List<Notification>();
+    DateTime todayDate = DateTime.Now;
 
     string query = " select* from book where book_id  in (select BookId from booksPossess where ownerid = @owner)";
     string query2 = " select* from club where club_id  in (select club_id from clubs_joined where user_id = @owner)";
     string query3 = " select * from quote join book on quote.book_id = book.Book_Id where owner_quote_id = @owner";
     string query4 = "select * from book ,book_review,review where book.book_id = book_review.book_id and review.Review_Id = book_review.review_id and  book.Book_Id = @bookID";
     string query5 = " select * from note join book on note.book_id = book.Book_Id where owner_note_id = @owner";
+    string query6 = "select * from notification , reading_goal ,book where notification.goal_id = reading_goal.goal_id and book.Book_Id = reading_goal.book_id and reading_goal.user_id = @owner ";
 
     using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
     {
@@ -130,7 +150,7 @@ public class IndexModel : PageModel
           book.Publisher = publisher;
           book.Language = Language;
           book.cover_image = cover_image;
-          book.avgRate = rating / countRating;
+          book.avgRate = countRating != 0 ? rating / countRating : 0;
           mybooks.Add(book);
         }
         Console.WriteLine(mybooks.Count);
@@ -213,6 +233,35 @@ public class IndexModel : PageModel
         mynotes.Add(note);
       }
       Console.WriteLine(mynotes.Count);
+      //////////////////////
+
+      dataAdapter = new SqlDataAdapter(query6, connection);
+      dataAdapter.SelectCommand.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
+
+      dataTable = new DataTable();
+      dataAdapter.Fill(dataTable);
+      foreach (DataRow row in dataTable.Rows)
+      {
+        DateTime? timing = Convert.ToDateTime(row["notification_time"]);
+        string? message = Convert.ToString(row["notification_message"]);
+        string? book_title = Convert.ToString(row["Title"]);
+        int number_pages = Convert.ToInt32(row["target_pages"]);
+
+
+        Notification notification = new();
+        notification.time = (DateTime)timing;
+        notification.Message = message;
+        notification.Title = book_title;
+        notification.pages = number_pages;
+        Console.WriteLine(todayDate > timing);
+
+        if (todayDate > timing)
+        {
+          Console.WriteLine(todayDate > timing);
+          duegoing.Add(notification);
+
+        }
+      }
       connection.Close();
     }
 

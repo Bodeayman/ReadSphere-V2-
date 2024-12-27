@@ -11,9 +11,10 @@
     <div class="reading-status">
         <h3>What are you reading?</h3>
         <div class="search-box">
-            <form method="get" action="/Index">
-                <input type="text" asp-for="SearchQuery" placeholder="Search books" value="@Model.SearchQuery" />
-                <button type="submit">🔍</button>
+            <form method="get" action="/Index" class="d-flex w-100">
+                <input type="text" asp-for="SearchQuery" placeholder="Search books" value="@Model.SearchQuery"
+                    class="form-control" />
+                <button type="submit" class="btn btn-primary ms-2">🔍</button>
             </form>
 
         </div>
@@ -31,7 +32,9 @@
                         {
 
                             <div class="book-card">
-                                <img src="~/@book.cover_image" alt="Book cover" class="book-cover">
+                                <img src="~/@book.cover_image" alt="Book cover" class="book-cover"
+                                    onerror="this.onerror=null; this.src='/uploads/default.jpeg';">
+
 
                                 <!-- Assuming `CoverImageUrl` exists in your model -->
                                 <div class="book-info">
@@ -64,7 +67,7 @@
 
         <!-- Carousel Section -->
         <div class="carousel-section">
-            <div class="carousel-container">
+            <div class="carousel-container bg-white p-4"> <!-- Add bg-white class for white background -->
                 <!-- Quotes Carousel -->
                 <div id="quotesCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
                     <div class="carousel-inner">
@@ -132,17 +135,18 @@
                         <span class="visually-hidden">Next</span>
                     </button>
                 </div>
+
+                @if (Request.Cookies["User"] != null)
+                {
+                    <a class="btn btn-primary" href="/AddNote">
+                        Add New Note
+                    </a>
+                    <a class="btn btn-primary" href="/AddQuote">
+                        Add New Quote
+                    </a>
+                }
             </div>
 
-            @if (Request.Cookies["User"] != null)
-            {
-                <a class="btn btn-primary" href="/AddNote">
-                    Add New Note
-                </a>
-                <a class="btn btn-primary" href="/AddQuote">
-                    Add New Quote
-                </a>
-            }
         </div>
 
     </div>
@@ -169,24 +173,31 @@
             </div>
             <h3> My Daily Goals</h3>
             <div class="challenge-stats">
-                <div class="year">2024</div>
-                <div class="stats">
-                    <h2>0</h2>
-                    <p>books completed</p>
-                    <p class="behind">4 books behind schedule</p>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 0%"></div>
+                @foreach (var notification in Model.duegoing)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>@notification.Title</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="year">@notification.time.ToString("yyyy-MM-dd")</div>
+                            <div class="year">@notification.pages Page</div>
+
+                            <div class="message">
+                                <p>@notification.Message</p>
+                            </div>
+                        </div>
                     </div>
-                    <p class="percentage">0/5 (0%)</p>
-                </div>
+                }
             </div>
+
             <div style="display:flex;flex-direction:row;">
-                <button class="view-challenge mx-3">View Challenge</button>
                 <a href="/AddGoals" class="btn btn-success">Add More Goals</a>
             </div>
         </div>
 
     </div>
+
     @if (Request.Cookies["User"] != null)
     {
         <div class="books-section">
@@ -197,10 +208,8 @@
 
                 {
                     <div class="book-card">
-                        <!-- Assuming `CoverImageUrl` exists in your model -->
                         <div class="book-info">
                             <h4 class="book-title">@club.name</h4>
-                            <!-- Assuming `Rating` exists in your model -->
                         </div>
                     </div>
                 }
@@ -225,15 +234,7 @@
 
         </div>
     }
-    <div class="books-section">
-        <div class="updates my-5">
-            <div class="updates-header">
-                <h3>UPDATES</h3>
-                <button class="customize">⚙️ Customize</button>
-            </div>
-            <p class="no-updates">No More Updates</p>
-        </div>
-    </div>
+
 </aside>
 
 <script src="~/js/homeCounter.js"></script>

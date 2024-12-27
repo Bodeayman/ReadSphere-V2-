@@ -108,7 +108,7 @@ public class BookDetailsModel : PageModel
                     book.Publisher = publisher;
                     book.Language = Language;
                     book.cover_image = cover_image;
-                    book.avgRate = rating / countRating;
+                    book.avgRate = countRating != 0 ? rating / countRating : 0;
 
                 }
             }

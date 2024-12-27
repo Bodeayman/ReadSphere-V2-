@@ -402,3 +402,85 @@ main {
     color: var(--secondary-color);
     font-size: 0.9rem;
 }
+
+/* General Styling for the Challenge Stats Section */
+.challenge-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    padding: 15px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    /* Slight lift */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    /* Slightly darker shadow */
+}
+
+.card-header {
+    background-color: #2196f3;
+    /* Soft blue */
+    color: white;
+    padding: 15px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border-radius: 8px 8px 0 0;
+    /* Rounded top corners */
+}
+
+.year {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.card-body {
+    padding: 15px;
+    font-size: 1rem;
+    color: #444;
+}
+
+.message {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 15px;
+    border-left: 4px solid #2196f3;
+    /* Accent color for message */
+    padding-left: 15px;
+}
+
+.message p {
+    margin: 0;
+}
+
+.card-header {
+    border-bottom: 2px solid #e3e3e3;
+}
+
+.card:last-child {
+    margin-bottom: 40px;
+    /* Add extra margin for the last card */
+}
+
+@media screen and (max-width: 768px) {
+    .challenge-stats {
+        padding: 10px;
+    }
+
+    .card {
+        margin: 0 5px;
+    }
+}

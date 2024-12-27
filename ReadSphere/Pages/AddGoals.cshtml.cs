@@ -16,11 +16,13 @@ namespace ReadSphere.Pages
 
 
         [BindProperty]
-        public string noti_time { get; set; }
+        public DateTime noti_time { get; set; }
         [BindProperty]
         public int target_pages { get; set; }
         [BindProperty]
         public int BookID { get; set; }
+        [BindProperty]
+        public string noti_message { get; set; }
 
 
         public void OnGet()
@@ -67,11 +69,12 @@ namespace ReadSphere.Pages
 
         public IActionResult OnPost()
         {
+            int selectedBookId = BookID;
+            Console.WriteLine(BookID);
             bookslist = bookslist ?? new List<newBook>();
 
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("Working");
 
 
                 return Page();
@@ -81,21 +84,28 @@ namespace ReadSphere.Pages
             Random random = new();
 
             int randomNumber = random.Next(0, 10000);
-            string query = "INSERT INTO [reading_goal] (goal_id,book_id,target_pages,notification_time) " +
-                           "VALUES (@id,@book_id,@target,@time)";
+            string query = "INSERT INTO [reading_goal] (goal_id,user_id,target_pages,book_id) " +
+                           "VALUES (@id,@user_id,@target,@book)";
+
+            string query2 = "Insert into [notification] values (@id,@message,@date)";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 SqlCommand cmd = new SqlCommand(query, connection);
 
 
-                cmd.Parameters.AddWithValue("@book_id", BookID);
+                cmd.Parameters.AddWithValue("@user_id", Convert.ToInt32(Request.Cookies["user_id"]));
                 cmd.Parameters.AddWithValue("@id", randomNumber);
-
                 cmd.Parameters.AddWithValue("@target", target_pages);
-                cmd.Parameters.AddWithValue("@added_date", DateTime.Now.Date);
-                cmd.Parameters.AddWithValue("@time", noti_time);
-                cmd.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
+                cmd.Parameters.AddWithValue("@book", BookID);
+
+
+
+                SqlCommand cmd2 = new SqlCommand(query2, connection);
+
+                cmd2.Parameters.AddWithValue("@id", randomNumber);
+                cmd2.Parameters.AddWithValue("@message", noti_message);
+                cmd2.Parameters.AddWithValue("@date", noti_time);
 
 
 
@@ -103,6 +113,7 @@ namespace ReadSphere.Pages
                 {
                     connection.Open();
                     cmd.ExecuteNonQuery();
+                    cmd2.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
