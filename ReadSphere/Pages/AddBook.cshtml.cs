@@ -55,8 +55,8 @@ public class AddBookModel : PageModel
         Random random = new();
 
         int randomNumber = random.Next(0, 10000);
-        string query = "INSERT INTO BOOK (Book_Id,Title, Author_Name, Publisher, Language, Cover_Image, Review_Id) " +
-                       "VALUES (@id,@Title, @Author, @Publisher, @Language, @CoverImage, @ReviewId)";
+        string query = "INSERT INTO BOOK (Book_Id,Title, Author_Name, Publisher, Language, Cover_Image) " +
+                       "VALUES (@id,@Title, @Author, @Publisher, @Language, @CoverImage)";
 
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
@@ -69,7 +69,6 @@ public class AddBookModel : PageModel
             cmd.Parameters.AddWithValue("@Publisher", Publisher);
             cmd.Parameters.AddWithValue("@Language", Language);
             cmd.Parameters.AddWithValue("@CoverImage", imageUrl);
-            cmd.Parameters.AddWithValue("@ReviewId", review_id);
 
             try
             {

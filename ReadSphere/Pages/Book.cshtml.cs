@@ -22,7 +22,6 @@ public class BookModel : PageModel
 
         public string cover_image { get; set; }
 
-        public string review_id { get; set; }
     }
     public void OnGet()
     {
@@ -30,7 +29,7 @@ public class BookModel : PageModel
 
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
-            string query = "select * from BOOK";
+            string query = "select * from BOOK ";
             SqlCommand cmd = new(query, connection);
             SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
             DataTable dataTable = new DataTable();
@@ -49,7 +48,6 @@ public class BookModel : PageModel
                     string publisher = row["Publisher"].ToString();
                     string Language = row["Language"].ToString();
                     string cover_image = row["Cover_Image"].ToString();
-                    string review_id = row["Review_Id"].ToString();
                     Book book = new Book();
                     book.Id = Id;
                     book.Title = title;
@@ -57,7 +55,6 @@ public class BookModel : PageModel
                     book.Publisher = publisher;
                     book.Language = Language;
                     book.cover_image = cover_image;
-                    book.review_id = review_id;
                     Books.Add(book);
                 }
                 ViewData["AllBooks"] = Books;

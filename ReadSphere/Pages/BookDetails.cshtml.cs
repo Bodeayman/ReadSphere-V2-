@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
@@ -24,18 +25,38 @@ public class BookDetailsModel : PageModel
         public double avgRate { get; set; }
         public string? cover_image { get; internal set; }
         public string? Language { get; internal set; }
+
+        public List<User_Rating> Users_rating { get; set; }
+
+
+    }
+
+    public class User_Rating
+    {
+        public string? Name { get; set; }
+        public string? comment { get; set; }
+        public decimal rating { get; set; }
     }
     public int ItemId { get; set; }
+
+
+    [BindProperty]
+    public string? comment { get; set; }
+
+    [BindProperty]
+
+    public decimal? rating { get; set; }
 
     public void OnGet(int itemid)
     {
         ItemId = itemid;
         book = new Book();
-
+        book.Users_rating = new List<User_Rating>();
         string query = " select* from book where Book_Id  = @item";
-        string query4 = "select * from book join review on book.Review_Id = review.Review_Id where Book_Id = @bookID";
+        string query4 = "select * from book ,book_review,review ,[user] where book.book_id = book_review.book_id and review.Review_Id = book_review.review_id and [User].user_id = review.user_id  and book.Book_Id = @bookID";
 
-
+        /// We will need this query in another time
+        /// Don't touch the above query
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
 
@@ -52,7 +73,13 @@ public class BookDetailsModel : PageModel
             ratingTable.Fill(ratingforbook);
             foreach (DataRow ratingrow in ratingforbook.Rows)
             {
+                User_Rating userRating = new User_Rating();
+                userRating.Name = Convert.ToString(ratingrow["User_Name"]);
+                userRating.rating = Convert.ToDecimal(ratingrow["Rating"]);
+                userRating.comment = Convert.ToString(ratingrow["Description"]);
+                book.Users_rating.Add(userRating);
                 rating += Convert.ToInt32(ratingrow["Rating"]);
+
                 countRating++;
             }
 
@@ -81,7 +108,7 @@ public class BookDetailsModel : PageModel
                     book.Publisher = publisher;
                     book.Language = Language;
                     book.cover_image = cover_image;
-                    book.avgRate = rating;
+                    book.avgRate = rating / countRating;
 
                 }
             }

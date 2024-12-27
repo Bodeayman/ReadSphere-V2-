@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Books Details";
 }
+<link rel="stylesheet" href="~/css/bookdetails.css">
 
 
 <div class="container mt-5">
@@ -39,7 +40,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="reviewId" class="font-weight-bold">Review ID</label>
+                            <label for="reviewId" class="font-weight-bold"> rating</label>
                             <input type="text" class="form-control" id="reviewId" value="@Model.book.avgRate" readonly />
                         </div>
                     </div>
@@ -60,6 +61,38 @@
                 </div>
             </div>
         </div>
+
+        @foreach (var book in Model.book.Users_rating)
+        {
+            <div class="book-review-card">
+                <div class="book-review-header">
+                    <h4 class="book-title">@book.Name</h4>
+                </div>
+                <div class="book-review-body">
+                    <p class="book-comment">@book.comment</p>
+                    <div class="book-rating">
+                        <span>Rating: </span>
+                        <span class="rating-stars">
+                            @* Generate star symbols based on the rating *@
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                if (i < @Math.Round(@book.rating))
+                                {
+                                    <span class="star-filled">★</span>
+                                }
+                                else
+                                {
+                                    <span class="star-empty">★</span>
+                                }
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+
     }
     else
     {

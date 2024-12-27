@@ -2,7 +2,7 @@ using System.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-
+using System.Text.RegularExpressions;
 namespace ReadSphere.Pages;
 
 public class IndexModel : PageModel
@@ -16,8 +16,10 @@ public class IndexModel : PageModel
   public List<Book> mybooks { get; set; }
   public List<Club> myclubs { get; set; }
   public List<Quote> myquotes { get; set; }
+  public List<Note> mynotes { get; set; }
 
-
+  [BindProperty]
+  public string SearchQuery { get; set; }
   public class Book
   {
     public int Id { get; set; }
@@ -51,17 +53,22 @@ public class IndexModel : PageModel
     { get; set; }
     public string book { get; set; }
   }
-  public void OnGet()
+  public void OnGet(string SearchQuery)
   {
+
+
+
+    Console.WriteLine($"SearchQuery: {SearchQuery}");
     mybooks = new List<Book>();
     myclubs = new List<Club>();
     myquotes = new List<Quote>();
-
+    mynotes = new List<Note>();
 
     string query = " select* from book where book_id  in (select BookId from booksPossess where ownerid = @owner)";
     string query2 = " select* from club where club_id  in (select club_id from clubs_joined where user_id = @owner)";
     string query3 = " select * from quote join book on quote.book_id = book.Book_Id where owner_quote_id = @owner";
-    string query4 = "select * from book join review on book.Review_Id = review.Review_Id where Book_Id = @bookID";
+    string query4 = "select * from book ,book_review,review where book.book_id = book_review.book_id and review.Review_Id = book_review.review_id and  book.Book_Id = @bookID";
+    string query5 = " select * from note join book on note.book_id = book.Book_Id where owner_note_id = @owner";
 
     using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
     {
@@ -82,16 +89,31 @@ public class IndexModel : PageModel
         connection.Open();
 
         dataAdapter.Fill(dataTable);
-        double rating = 0;
-        double countRating = 0;
+
         foreach (DataRow row in dataTable.Rows)
         {
+          double rating = 0;
+          double countRating = 0;
           int Id = Convert.ToInt32(row["Book_Id"]);
           string title = row["Title"].ToString();
           string Author = row["Author_Name"].ToString();
           string publisher = row["Publisher"].ToString();
           string Language = row["Language"].ToString();
           string cover_image = row["Cover_Image"].ToString();
+          Console.WriteLine(SearchQuery);
+
+          if (!string.IsNullOrEmpty(SearchQuery))
+          {
+            Regex regex = new Regex(SearchQuery, RegexOptions.IgnoreCase);
+
+            // Only add the book if it matches the regex for title or author
+            if (!regex.IsMatch(title) && !regex.IsMatch(Author))
+            {
+              continue; // Skip this book if it doesn't match
+            }
+          }
+
+
           SqlDataAdapter ratingTable = new SqlDataAdapter(query4, connection);
           ratingTable.SelectCommand.Parameters.AddWithValue("@bookID", Id);
 
@@ -129,8 +151,8 @@ public class IndexModel : PageModel
 
       foreach (DataRow row in dataTable.Rows)
       {
-        string desc = Convert.ToString(row["club_description"]);
-        string name = Convert.ToString(row["club_name"]); //
+        string? desc = Convert.ToString(row["club_description"]);
+        string? name = Convert.ToString(row["club_name"]); //
 
         Club club = new();
         club.desc = desc;
@@ -152,9 +174,9 @@ public class IndexModel : PageModel
 
       foreach (DataRow row in dataTable.Rows)
       {
-        string desc = Convert.ToString(row["quote_text"]);
-        string name = Convert.ToString(row["Author_Name"]); //
-        string book = Convert.ToString(row["Title"]);
+        string? desc = Convert.ToString(row["quote_text"]);
+        string? name = Convert.ToString(row["Author_Name"]);
+        string? book = Convert.ToString(row["Title"]);
 
 
         Quote quote = new();
@@ -165,6 +187,32 @@ public class IndexModel : PageModel
         myquotes.Add(quote);
       }
       Console.WriteLine(myclubs.Count);
+
+
+      ///////// This is for the notes section
+      dataAdapter = new SqlDataAdapter(query5, connection);
+      dataAdapter.SelectCommand.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
+
+      dataTable = new DataTable();
+
+
+
+      dataAdapter.Fill(dataTable);
+
+      foreach (DataRow row in dataTable.Rows)
+      {
+        string? desc = Convert.ToString(row["note_text"]);
+        string? name = Convert.ToString(row["Author_Name"]);
+        string? book = Convert.ToString(row["Title"]);
+
+
+        Note note = new();
+        note.desc = desc;
+        note.author = name;
+
+        mynotes.Add(note);
+      }
+      Console.WriteLine(mynotes.Count);
       connection.Close();
     }
 
