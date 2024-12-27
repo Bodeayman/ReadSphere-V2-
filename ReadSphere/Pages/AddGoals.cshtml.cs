@@ -81,7 +81,7 @@ namespace ReadSphere.Pages
             Random random = new();
 
             int randomNumber = random.Next(0, 10000);
-            string query = "INSERT INTO [Daily_Goal] (goal_id,book_id,target_pages,notification_time) " +
+            string query = "INSERT INTO [reading_goal] (goal_id,book_id,target_pages,notification_time) " +
                            "VALUES (@id,@book_id,@target,@time)";
 
             using (SqlConnection connection = new SqlConnection(connectionString))

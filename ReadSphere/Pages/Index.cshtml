@@ -28,14 +28,14 @@
                     {
 
                         <div class="book-card">
-                            <img src="" alt="Book cover" class="book-cover">
+                            <img src="~/@book.cover_image" alt="Book cover" class="book-cover">
 
                             <!-- Assuming `CoverImageUrl` exists in your model -->
                             <div class="book-info">
                                 <h4 class="book-title">@book.Title</h4>
                                 <p class="book-author">@book.Author</p>
                                 <a class="book-rating" href="/AddReview?itemid=@book.Id">
-                                    ★★★★☆ @book.review_id
+                                    ★★★★☆ @Math.Round(@book.avgRate, 2)
                                 </a>
 
                                 <!-- Assuming `Rating` exists in your model -->
@@ -77,6 +77,9 @@
                                 <p class="quote-author">- Marcus Tullius Cicero</p>
                             </div>
                         </div>
+
+
+
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#quotesCarousel"
                         data-bs-slide="prev">
@@ -146,12 +149,7 @@
 </div>
 
 <aside class="sidebar">
-    @* <div class="awards-banner">
-        <h2>Goodreads Choice Awards 2024</h2>
-        <p>Pick your favorite books of the year!</p>
-        <button class="vote-btn">Cast Your Vote</button>
-        <p class="vote-count">3,183,424 Votes Cast</p>
-    </div> *@
+
     <div class="books-section">
         <div class="reading-challenge">
             <h3> My Reading Goals</h3>
@@ -235,3 +233,29 @@
 
 <script src="~/js/homeCounter.js"></script>
 <script src="~/js/home.js"></script>
+
+
+
+
+@*                    @for (int i = 0; i < Model.myquotes.Count; i++)
+                        {
+                            if (i == 0)
+                            {
+                                <div class="carousel-item active ">
+                                    <div class="quote-card">
+                                        <p class="quote-text">"@Model.myquotes[i].quote"</p>
+                                        <p class="quote-author">- @Model.myquotes[i].author ,@Model.myquotes[i].book</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="carousel-item ">
+                                    <div class="quote-card">
+                                        <p class="quote-text">"@Model.myquotes[i].quote"</p>
+                                        <p class="quote-author">- @Model.myquotes[i].author ,@Model.myquotes[i].book</p>
+                                    </div>
+                                </div>
+                            }
+
+                        } *@

@@ -21,7 +21,7 @@ public class BookDetailsModel : PageModel
         public string Title { get; set; }
         public string Author { get; set; }
         public string? Publisher { get; internal set; }
-        public string review_id { get; set; }
+        public double avgRate { get; set; }
         public string? cover_image { get; internal set; }
         public string? Language { get; internal set; }
     }
@@ -33,6 +33,8 @@ public class BookDetailsModel : PageModel
         book = new Book();
 
         string query = " select* from book where Book_Id  = @item";
+        string query4 = "select * from book join review on book.Review_Id = review.Review_Id where Book_Id = @bookID";
+
 
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
@@ -41,12 +43,26 @@ public class BookDetailsModel : PageModel
             dataAdapter.SelectCommand.Parameters.AddWithValue("@item", itemid);
 
             DataTable dataTable = new DataTable();
+            DataTable ratingforbook = new DataTable();
+
+            SqlDataAdapter ratingTable = new SqlDataAdapter(query4, connection);
+            ratingTable.SelectCommand.Parameters.AddWithValue("@bookID", itemid);
+            double countRating = 0;
+            double rating = 0;
+            ratingTable.Fill(ratingforbook);
+            foreach (DataRow ratingrow in ratingforbook.Rows)
+            {
+                rating += Convert.ToInt32(ratingrow["Rating"]);
+                countRating++;
+            }
+
 
             try
             {
                 connection.Open();
 
                 dataAdapter.Fill(dataTable);
+
 
                 foreach (DataRow row in dataTable.Rows)
                 {
@@ -57,7 +73,7 @@ public class BookDetailsModel : PageModel
                     string publisher = row["Publisher"].ToString() ?? "Unknown";
                     string Language = row["Language"].ToString() ?? "Unknown";
                     string cover_image = row["Cover_Image"].ToString() ?? "Unknown";
-                    string review_id = row["Review_Id"].ToString() ?? "Unknown";
+
                     Console.WriteLine(Language);
                     book.Id = Id;
                     book.Title = title;
@@ -65,7 +81,8 @@ public class BookDetailsModel : PageModel
                     book.Publisher = publisher;
                     book.Language = Language;
                     book.cover_image = cover_image;
-                    book.review_id = review_id;
+                    book.avgRate = rating;
+
                 }
             }
 

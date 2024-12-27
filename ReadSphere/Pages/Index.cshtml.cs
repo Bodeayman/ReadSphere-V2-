@@ -15,6 +15,8 @@ public class IndexModel : PageModel
   }
   public List<Book> mybooks { get; set; }
   public List<Club> myclubs { get; set; }
+  public List<Quote> myquotes { get; set; }
+
 
   public class Book
   {
@@ -27,7 +29,7 @@ public class IndexModel : PageModel
 
     public string cover_image { get; set; }
 
-    public string review_id { get; set; }
+    public double avgRate { get; set; }
   }
 
   public class Club
@@ -36,29 +38,52 @@ public class IndexModel : PageModel
     public string desc { get; set; }
 
   }
+
+  public class Note
+  {
+    public string author { get; set; }
+    public string desc { get; set; }
+  }
+  public class Quote
+  {
+    public string author { get; set; }
+    public string quote
+    { get; set; }
+    public string book { get; set; }
+  }
   public void OnGet()
   {
     mybooks = new List<Book>();
     myclubs = new List<Club>();
+    myquotes = new List<Quote>();
+
 
     string query = " select* from book where book_id  in (select BookId from booksPossess where ownerid = @owner)";
     string query2 = " select* from club where club_id  in (select club_id from clubs_joined where user_id = @owner)";
+    string query3 = " select * from quote join book on quote.book_id = book.Book_Id where owner_quote_id = @owner";
+    string query4 = "select * from book join review on book.Review_Id = review.Review_Id where Book_Id = @bookID";
 
     using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
     {
 
-      Console.WriteLine(Convert.ToInt32(Request.Cookies["user_id"]));
       SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
       dataAdapter.SelectCommand.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
 
       DataTable dataTable = new DataTable();
+
+
+
+
+
+      DataTable ratingforbook = new DataTable();
 
       try
       {
         connection.Open();
 
         dataAdapter.Fill(dataTable);
-
+        double rating = 0;
+        double countRating = 0;
         foreach (DataRow row in dataTable.Rows)
         {
           int Id = Convert.ToInt32(row["Book_Id"]);
@@ -67,7 +92,15 @@ public class IndexModel : PageModel
           string publisher = row["Publisher"].ToString();
           string Language = row["Language"].ToString();
           string cover_image = row["Cover_Image"].ToString();
-          string review_id = row["Review_Id"].ToString();
+          SqlDataAdapter ratingTable = new SqlDataAdapter(query4, connection);
+          ratingTable.SelectCommand.Parameters.AddWithValue("@bookID", Id);
+
+          ratingTable.Fill(ratingforbook);
+          foreach (DataRow ratingrow in ratingforbook.Rows)
+          {
+            rating += Convert.ToInt32(ratingrow["Rating"]);
+            countRating++;
+          }
           Book book = new Book();
           book.Id = Id;
           book.Title = title;
@@ -75,16 +108,15 @@ public class IndexModel : PageModel
           book.Publisher = publisher;
           book.Language = Language;
           book.cover_image = cover_image;
-          book.review_id = review_id;
+          book.avgRate = rating / countRating;
           mybooks.Add(book);
         }
         Console.WriteLine(mybooks.Count);
-        connection.Close();
       }
 
       catch (Exception ex)
       {
-        Console.WriteLine($"An error occurred: {ex.Message}");
+        Console.WriteLine($"An error Happended: {ex.Message}");
       }
 
       dataAdapter = new SqlDataAdapter(query2, connection);
@@ -92,30 +124,48 @@ public class IndexModel : PageModel
 
       dataTable = new DataTable();
 
-      try
+
+      dataAdapter.Fill(dataTable);
+
+      foreach (DataRow row in dataTable.Rows)
       {
-        connection.Open();
+        string desc = Convert.ToString(row["club_description"]);
+        string name = Convert.ToString(row["club_name"]); //
 
-        dataAdapter.Fill(dataTable);
+        Club club = new();
+        club.desc = desc;
+        club.name = name;
 
-        foreach (DataRow row in dataTable.Rows)
-        {
-          string desc = Convert.ToString(row["club_description"]);
-          string name = Convert.ToString(row["club_name"]); //
-
-          Club club = new();
-          club.desc = desc;
-          club.name = name;
-
-          myclubs.Add(club);
-        }
-        Console.WriteLine(myclubs.Count);
+        myclubs.Add(club);
       }
-      catch (Exception ex)
+      Console.WriteLine(myclubs.Count);
+
+
+      dataAdapter = new SqlDataAdapter(query3, connection);
+      dataAdapter.SelectCommand.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
+
+      dataTable = new DataTable();
+
+
+
+      dataAdapter.Fill(dataTable);
+
+      foreach (DataRow row in dataTable.Rows)
       {
-        Console.WriteLine($"An error occurred: {ex.Message}");
-      }
+        string desc = Convert.ToString(row["quote_text"]);
+        string name = Convert.ToString(row["Author_Name"]); //
+        string book = Convert.ToString(row["Title"]);
 
+
+        Quote quote = new();
+        quote.author = name;
+        quote.quote = desc;
+        quote.book = book;
+
+        myquotes.Add(quote);
+      }
+      Console.WriteLine(myclubs.Count);
+      connection.Close();
     }
 
   }

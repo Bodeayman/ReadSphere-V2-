@@ -21,6 +21,10 @@
                         </div>
                         <div class="card-body">
                             <h5>Users</h5>
+                            @foreach (var user in club.users)
+                            {
+                                <p>@user</p>
+                            }
                         </div>
 
                         <form method="post">
