@@ -77,6 +77,15 @@ public class IndexModel : PageModel
   // Came
   public List<Notification> duegoing { get; set; }
 
+
+  public IActionResult OnPost()
+  {
+    Response.Cookies.Delete("user_id");
+    Response.Cookies.Delete("User");
+    Response.Cookies.Delete("is_admin");
+    return RedirectToPage("/Index");
+
+  }
   public void OnGet(string SearchQuery)
   {
 

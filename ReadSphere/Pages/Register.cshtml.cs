@@ -56,7 +56,17 @@ public class Register : PageModel
 
                 Random random = new();
                 int randomNumber = random.Next(0, 100000);
-                string query = "INSERT INTO [User] (User_id, User_name, Email, Password, is_admin) VALUES (@id, @name, @email, @password, 0)";
+                string query = "";
+                if (Request.Cookies["is_admin"] == "admin")
+                {
+                    query = "INSERT INTO [User] (User_id, User_name, Email, Password, is_admin) VALUES (@id, @name, @email, @password, 1)";
+
+                }
+                else
+                {
+                    query = "INSERT INTO [User] (User_id, User_name, Email, Password, is_admin) VALUES (@id, @name, @email, @password, 0)";
+
+                }
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.Add("@id", SqlDbType.Int).Value = randomNumber;
