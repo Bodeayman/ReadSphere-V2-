@@ -159,21 +159,25 @@
         </div>
 
     </div>
-    <div style="display:flex; flex-direction:row;">
-        <div>
-            <form method="post">
+    @if (Request.Cookies["User"] != null)
+    {
+        <div style="display:flex; flex-direction:row;">
+            <div>
+                <form method="post">
 
-                <button type="submit" class="btn btn-danger ms-2">Logout</button>
-            </form>
-        </div>
-        <div style="width:100px;">
-        </div>
+                    <button type="submit" class="btn btn-danger ms-2">Logout</button>
+                </form>
+            </div>
+            <div style="width:100px;">
+            </div>
 
-        <div class="">
-            <a href="/ChangePassword" class="btn btn-primary">Change your password</a>
+            <div class="">
+                <a href="/ChangePassword" class="btn btn-primary">Change your password</a>
 
+            </div>
         </div>
-    </div>
+    }
+
 
 
 </div>
