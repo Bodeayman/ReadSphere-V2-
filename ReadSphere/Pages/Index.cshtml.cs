@@ -58,13 +58,18 @@ public class IndexModel : PageModel
 
     public DateTime dateTime { get; set; }
     public string book { get; set; }
+
+    public int numberofpages { get; set; }
   }
   public class Quote
   {
     public string author { get; set; }
     public string quote
     { get; set; }
+    public DateTime dateTime { get; set; }
     public string book { get; set; }
+    public int numberofpages { get; set; }
+
   }
   //Didn't come yet
   public List<Notification> ongoing { get; set; }
@@ -206,7 +211,8 @@ public class IndexModel : PageModel
         quote.author = name;
         quote.quote = desc;
         quote.book = book;
-
+        quote.numberofpages = Convert.ToInt32(row["page_number"]);
+        quote.dateTime = Convert.ToDateTime(row["added_date"]);
         myquotes.Add(quote);
       }
       Console.WriteLine(myclubs.Count);
@@ -236,6 +242,7 @@ public class IndexModel : PageModel
         note.author = name;
         note.book = bookTitle;
         note.dateTime = date;
+        note.numberofpages = Convert.ToInt32(row["page_number"]);
 
         mynotes.Add(note);
       }
@@ -260,6 +267,7 @@ public class IndexModel : PageModel
         notification.Message = message;
         notification.Title = book_title;
         notification.pages = number_pages;
+
         Console.WriteLine(todayDate > timing);
 
         if (todayDate > timing)
