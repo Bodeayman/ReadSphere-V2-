@@ -403,7 +403,6 @@ main {
     font-size: 0.9rem;
 }
 
-/* General Styling for the Challenge Stats Section */
 .challenge-stats {
     display: flex;
     flex-direction: column;
@@ -424,20 +423,16 @@ main {
 
 .card:hover {
     transform: translateY(-5px);
-    /* Slight lift */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    /* Slightly darker shadow */
 }
 
 .card-header {
     background-color: #2196f3;
-    /* Soft blue */
     color: white;
     padding: 15px;
     font-size: 1.25rem;
     font-weight: 600;
     border-radius: 8px 8px 0 0;
-    /* Rounded top corners */
 }
 
 .year {
@@ -458,7 +453,6 @@ main {
     line-height: 1.6;
     margin-top: 15px;
     border-left: 4px solid #2196f3;
-    /* Accent color for message */
     padding-left: 15px;
 }
 
@@ -472,7 +466,6 @@ main {
 
 .card:last-child {
     margin-bottom: 40px;
-    /* Add extra margin for the last card */
 }
 
 @media screen and (max-width: 768px) {

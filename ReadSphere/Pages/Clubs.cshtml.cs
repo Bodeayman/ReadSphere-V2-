@@ -75,9 +75,16 @@ namespace ReadSphere.Pages
                     }
                     count = Clubs.Count;
                 }
+                catch (SqlException sqlex)
+                {
+                    Console.WriteLine(sqlex.Message);
+                    RedirectToPage("/Clubs");
+
+                }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"An error occurred: {ex.Message}");
+                    RedirectToPage("/Clubs");
                 }
             }
         }
@@ -110,44 +117,45 @@ namespace ReadSphere.Pages
 
             using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
             {
+
                 string query = "INSERT INTO clubs_joined (user_id, club_id) VALUES (@UserId, @ClubId)";
                 SqlCommand command = new SqlCommand(query, connection);
 
-                // Ensure the club exists in the CLUB table first
                 string checkClubExistsQuery = "SELECT COUNT(*) FROM dbo.Club WHERE Club_id = @Club_id";
                 SqlCommand checkCommand = new SqlCommand(checkClubExistsQuery, connection);
 
-                // Properly declare and assign parameters
-                checkCommand.Parameters.AddWithValue("@Club_id", ClubId);  // Correct parameter name is @Club_id
-                checkCommand.Parameters.AddWithValue("@UserId", userId);   // Add UserId parameter as well for insert query
-
-                connection.Open();
-
-                // Execute the check command to get the count
-                var result = checkCommand.ExecuteScalar();
-                if (result != null)
+                checkCommand.Parameters.AddWithValue("@Club_id", ClubId);
+                checkCommand.Parameters.AddWithValue("@UserId", userId);
+                try
                 {
-                    int clubCount = Convert.ToInt32(result); // Safely convert to int
+                    connection.Open();
 
-                    Console.WriteLine($"Club count: {clubCount}"); // Debug log
-
-                    if (clubCount > 0)
+                    var result = checkCommand.ExecuteScalar();
+                    if (result != null)
                     {
-                        command.Parameters.AddWithValue("@UserId", userId);  // Ensure you add the parameter for the insert query
-                        command.Parameters.AddWithValue("@ClubId", ClubId);  // Ensure you add the parameter for the insert query
-                        command.ExecuteNonQuery();
-                        success = true;
+                        int clubCount = Convert.ToInt32(result);
+
+                        if (clubCount > 0)
+                        {
+                            command.Parameters.AddWithValue("@UserId", userId);
+                            command.Parameters.AddWithValue("@ClubId", ClubId);
+                            command.ExecuteNonQuery();
+                            success = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("The specified club does not exist.");
+                        }
                     }
                     else
                     {
-                        // Handle the error: club not found
-                        Console.WriteLine("The specified club does not exist.");
+                        Console.WriteLine("Error: Club query did not return a valid result.");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Handle the case where the result is null
-                    Console.WriteLine("Error: Club query did not return a valid result.");
+                    Console.WriteLine(ex.Message);
+                    RedirectToPage("/Index");
                 }
             }
 

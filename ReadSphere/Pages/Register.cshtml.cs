@@ -9,19 +9,17 @@ using System.Data;
 public class Register : PageModel
 {
 
+
     [BindProperty]
-    [Required(ErrorMessage = "Name is required.")]
     public string? email { get; set; }
 
     [BindProperty]
-    [Required(ErrorMessage = "password is required.")]
     public string? password { get; set; }
+
     [BindProperty]
-    [Required(ErrorMessage = "Name is required.")]
     public string? name { get; set; }
 
     [BindProperty]
-    [Required(ErrorMessage = "Confirm Password is required.")]
     public string? confirmpassword { get; set; }
 
     public string? ErrorMessage { get; set; }
@@ -32,42 +30,55 @@ public class Register : PageModel
 
     public IActionResult OnPost()
     {
-        if (!ModelState.IsValid)
+
+        if (password != confirmpassword)
         {
-            email = "Invalid";
+            ErrorMessage = "Passwords do not match.";
             return Page();
         }
 
-
         using (SqlConnection connection = new("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
-            Random random = new();
-
-            int randomNumber = random.Next(0, 10000);
-            string query = "insert into [User]  values (@id, @name, @email, @password, 'no_image', 0)";
-
-            SqlCommand command = new(query, connection);
-
-            command.Parameters.Add("@name", SqlDbType.NVarChar).Value = name;
-            command.Parameters.Add("@id", SqlDbType.NVarChar).Value = randomNumber;
-
-            command.Parameters.Add("@email", SqlDbType.NVarChar).Value = email;
-            command.Parameters.Add("@password", SqlDbType.NVarChar).Value = password;
+            string checkEmailQuery = "SELECT COUNT(1) FROM [User] WHERE Email = @Email";
+            SqlCommand checkEmailCommand = new SqlCommand(checkEmailQuery, connection);
+            checkEmailCommand.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
 
             try
             {
                 connection.Open();
+                int emailCount = (int)checkEmailCommand.ExecuteScalar();
+                if (emailCount > 0)
+                {
+                    ErrorMessage = "This email is already registered. Please use a different email.";
+                    return Page();
+                }
+
+
+                Random random = new();
+                int randomNumber = random.Next(0, 100000);
+                string query = "INSERT INTO [User] (User_id, User_name, Email, Password, is_admin) VALUES (@id, @name, @email, @password, 0)";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.Add("@id", SqlDbType.Int).Value = randomNumber;
+                command.Parameters.Add("@name", SqlDbType.NVarChar).Value = name;
+                command.Parameters.Add("@email", SqlDbType.NVarChar).Value = email;
+                command.Parameters.Add("@password", SqlDbType.NVarChar).Value = password;
+
                 command.ExecuteNonQuery();
+
+                return RedirectToPage("/Index");
             }
             catch (Exception ex)
             {
-                ErrorMessage = "An error occurred while validating your credentials.";
+                ErrorMessage = "An error occurred while processing your request.";
                 Console.WriteLine(ex);
+                return Page();
             }
-
         }
-        return Page();
     }
-
-
 }
+
+
+
+
+

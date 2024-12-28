@@ -55,6 +55,9 @@ public class IndexModel : PageModel
   {
     public string author { get; set; }
     public string desc { get; set; }
+
+    public DateTime dateTime { get; set; }
+    public string book { get; set; }
   }
   public class Quote
   {
@@ -223,12 +226,16 @@ public class IndexModel : PageModel
       {
         string? desc = Convert.ToString(row["note_text"]);
         string? name = Convert.ToString(row["Author_Name"]);
-        string? book = Convert.ToString(row["Title"]);
+        string? bookTitle = Convert.ToString(row["Title"]);
+        DateTime date = Convert.ToDateTime(row["added_date"]);
+
 
 
         Note note = new();
         note.desc = desc;
         note.author = name;
+        note.book = bookTitle;
+        note.dateTime = date;
 
         mynotes.Add(note);
       }

@@ -26,11 +26,14 @@
                                 <p>@book</p>
                             }
                         </div>
+                        @if (Request.Cookies["is_admin"] == "admin")
+                        {
+                            <form method="post">
+                                <input type="hidden" name="CatId" value="@cat.Id" />
+                                <input type="submit" value="Add a book to category" class="btn btn-primary">
+                            </form>
+                        }
 
-                        <form method="post">
-                            <input type="hidden" name="CatId" value="@cat.Id" />
-                            <input type="submit" value="Add a book to category" class="btn btn-primary">
-                        </form>
                     </div>
                 </div>
             }

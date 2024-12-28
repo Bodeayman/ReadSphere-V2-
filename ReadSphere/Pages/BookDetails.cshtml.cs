@@ -6,12 +6,10 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-// Book model definition
 
 
 
 
-// Page model for book details
 public class BookDetailsModel : PageModel
 {
     public Book book { get; set; }
@@ -55,8 +53,6 @@ public class BookDetailsModel : PageModel
         string query = " select* from book where Book_Id  = @item";
         string query4 = "select * from book ,book_review,review ,[user] where book.book_id = book_review.book_id and review.Review_Id = book_review.review_id and [User].user_id = review.user_id  and book.Book_Id = @bookID";
 
-        /// We will need this query in another time
-        /// Don't touch the above query
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
 

@@ -21,6 +21,7 @@
 
         @if (Request.Cookies["User"] != null)
         {
+
             <div class="books-section">
                 <h3>My Books</h3>
                 @if (Model.mybooks.Count > 0)
@@ -31,12 +32,11 @@
 
                         {
 
-                            <div class="book-card">
+                            <div class="book-card" href="/BookDetails?itemid=@book.Id">
                                 <img src="~/@book.cover_image" alt="Book cover" class="book-cover"
                                     onerror="this.onerror=null; this.src='/uploads/default.jpeg';">
 
 
-                                <!-- Assuming `CoverImageUrl` exists in your model -->
                                 <div class="book-info">
                                     <h4 class="book-title">@book.Title</h4>
                                     <p class="book-author">@book.Author</p>
@@ -44,7 +44,6 @@
                                         ★★★★☆ @Math.Round(@book.avgRate, 2)
                                     </a>
 
-                                    <!-- Assuming `Rating` exists in your model -->
                                 </div>
                             </div>
                         }
@@ -64,11 +63,13 @@
                 }
             </div>
         }
+        else
+        {
+            <h1>Please Sign in</h1>
+        }
 
-        <!-- Carousel Section -->
         <div class="carousel-section">
-            <div class="carousel-container bg-white p-4"> <!-- Add bg-white class for white background -->
-                <!-- Quotes Carousel -->
+            <div class="carousel-container bg-white p-4">
                 <div id="quotesCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         @if (Model.myquotes != null && Model.myquotes.Count > 0)
@@ -103,7 +104,6 @@
                     </button>
                 </div>
 
-                <!-- Notes Carousel -->
                 <div id="notesCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         @if (Model.mynotes != null && Model.mynotes.Count > 0)
@@ -115,6 +115,9 @@
                                     <div class="quote-card">
                                         <p class="quote-text">@note.desc</p>
                                         <p class="quote-author">@note.author</p>
+                                        <p class="quote-book">@note.book</p>
+                                        <p class="quote-book">@note.dateTime</p>
+
                                     </div>
                                 </div>
                             }
@@ -159,19 +162,7 @@
     <div class="books-section">
         <div class="reading-challenge">
             <h3> My Reading Goals</h3>
-            <div class="challenge-stats">
-                <div class="year">2024</div>
-                <div class="stats">
-                    <h2>0</h2>
-                    <p>books completed</p>
-                    <p class="behind">4 books behind schedule</p>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 0%"></div>
-                    </div>
-                    <p class="percentage">0/5 (0%)</p>
-                </div>
-            </div>
-            <h3> My Daily Goals</h3>
+
             <div class="challenge-stats">
                 @foreach (var notification in Model.duegoing)
                 {
@@ -190,10 +181,12 @@
                     </div>
                 }
             </div>
-
-            <div style="display:flex;flex-direction:row;">
-                <a href="/AddGoals" class="btn btn-success">Add More Goals</a>
-            </div>
+            @if (Request.Cookies["User"] != null)
+            {
+                <div style="display:flex;flex-direction:row;">
+                    <a href="/AddGoals" class="btn btn-success">Add More Goals</a>
+                </div>
+            }
         </div>
 
     </div>
@@ -239,29 +232,3 @@
 
 <script src="~/js/homeCounter.js"></script>
 <script src="~/js/home.js"></script>
-
-
-
-
-@*                    @for (int i = 0; i < Model.myquotes.Count; i++)
-                        {
-                            if (i == 0)
-                            {
-                                <div class="carousel-item active ">
-                                    <div class="quote-card">
-                                        <p class="quote-text">"@Model.myquotes[i].quote"</p>
-                                        <p class="quote-author">- @Model.myquotes[i].author ,@Model.myquotes[i].book</p>
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="carousel-item ">
-                                    <div class="quote-card">
-                                        <p class="quote-text">"@Model.myquotes[i].quote"</p>
-                                        <p class="quote-author">- @Model.myquotes[i].author ,@Model.myquotes[i].book</p>
-                                    </div>
-                                </div>
-                            }
-
-                        } *@

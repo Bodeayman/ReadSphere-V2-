@@ -23,11 +23,9 @@ public class AddQuoteModel : PageModel
     public void OnGet()
     {
         bookslist = new List<newBook>();
-        //Beware the syntax
 
         using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
         {
-            // SQL query to insert a worker into the Workers table
             string query = "select Book_id , title from book where book_id  in (select BookId from booksPossess where ownerid = @owner)";
 
             Console.WriteLine(Convert.ToInt32(Request.Cookies["user_id"]));
@@ -37,13 +35,10 @@ public class AddQuoteModel : PageModel
             DataTable dataTable = new DataTable();
             try
             {
-                // Open the connection
                 connection.Open();
 
-                // Fill the DataTable with the data from the database
                 dataAdapter.Fill(dataTable);
 
-                // Process the data from the DataTable
                 foreach (DataRow row in dataTable.Rows)
                 {
                     int Id = Convert.ToInt32(row["Book_id"]);

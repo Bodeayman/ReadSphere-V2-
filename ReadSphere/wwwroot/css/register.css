@@ -9,7 +9,6 @@
 * {
     margin: 0;
     padding: 0;
-    /*box-sizing: border-box;*/
     font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
 }
 
@@ -37,12 +36,15 @@ body {
 #name {
     box-sizing: border-box;
 }
+
 #email {
     box-sizing: border-box;
 }
+
 #password {
     box-sizing: border-box;
 }
+
 #confirmPassword {
     box-sizing: border-box;
 }

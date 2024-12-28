@@ -14,7 +14,6 @@
             <div class="container mt-5">
                 <h2>Add Book to Category</h2>
 
-                <!-- Book Selection Dropdown -->
                 <div class="mb-3">
                     <label for="BookID" class="form-label">Select Book</label>
                     <select asp-for="BookID" class="form-control">
@@ -27,7 +26,6 @@
                     <span asp-validation-for="BookID" class="text-danger"></span>
                 </div>
 
-                <!-- Hidden field for CategoryID (it's already set in the model) -->
                 <input type="hidden" name="CategoryID" value="@Model.CategoryID" />
 
                 <button type="submit" class="btn btn-primary">Add to Category</button>

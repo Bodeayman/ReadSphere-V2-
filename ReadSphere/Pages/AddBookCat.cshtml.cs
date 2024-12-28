@@ -16,24 +16,20 @@ namespace ReadSphere.Pages
 
         public List<newBook> bookslist { get; set; }
 
-        // Define the BookID property to bind the selected book
         [BindProperty]
         public int BookID { get; set; }
 
-        // The CategoryID is now being passed directly from the URL
-        [BindProperty(SupportsGet = true)]  // Bind CategoryID from the query string
+        [BindProperty(SupportsGet = true)]
         public int CategoryID { get; set; }
 
         public void OnGet(int CatId)
         {
-            // Assign the CategoryID from the query string
             CategoryID = CatId;
 
             bookslist = new List<newBook>();
 
             using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
             {
-                // Query to get books
                 string booksQuery = "SELECT Book_id, title FROM book";
                 SqlDataAdapter booksDataAdapter = new SqlDataAdapter(booksQuery, connection);
                 DataTable booksDataTable = new DataTable();
@@ -75,15 +71,14 @@ namespace ReadSphere.Pages
                 return RedirectToPage("/Login");
             }
 
-            // Add the book-category relationship into the database
             bool success = AddBookToCategory(Convert.ToInt32(userId), BookID, CategoryID);
 
             if (success)
             {
-                return RedirectToPage("/Index"); // Redirect to another page (e.g., index) after success
+                return RedirectToPage("/Index");
             }
 
-            return RedirectToPage("/Index"); // Return to the current page with the form if something goes wrong
+            return RedirectToPage("/Index");
         }
 
         private bool AddBookToCategory(int userId, int bookId, int categoryId)

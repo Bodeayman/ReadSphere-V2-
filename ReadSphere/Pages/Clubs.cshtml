@@ -11,28 +11,35 @@
 
 
         <div class="row">
-            @foreach (var club in Model.Clubs)
+            @if (Model.Clubs != null && Model.Clubs.Count > 0)
             {
-                <div class="col-md-4">
-                    <div class="card mb-4" style="max-width: 300px;">
-                        <div class="card-body">
-                            <h5 class="card-title">@club.Name</h5>
-                            <p class="card-text">@club.Desc</p>
-                        </div>
-                        <div class="card-body">
-                            <h5>Users</h5>
-                            @foreach (var user in club.users)
-                            {
-                                <p>@user</p>
-                            }
-                        </div>
+                @foreach (var club in Model.Clubs)
+                {
+                    <div class="col-md-4">
+                        <div class="card mb-4" style="max-width: 300px;">
+                            <div class="card-body">
+                                <h5 class="card-title">@club.Name</h5>
+                                <p class="card-text">@club.Desc</p>
+                            </div>
+                            <div class="card-body">
+                                <h5>Users</h5>
+                                @foreach (var user in club.users)
+                                {
+                                    <p>@user</p>
+                                }
+                            </div>
 
-                        <form method="post">
-                            <input type="hidden" name="ClubId" value="@club.Id" />
-                            <input type="submit" value="Join the club" class="btn btn-primary">
-                        </form>
+                            <form method="post">
+                                <input type="hidden" name="ClubId" value="@club.Id" />
+                                <input type="submit" value="Join the club" class="btn btn-primary">
+                            </form>
+                        </div>
                     </div>
-                </div>
+                }
+            }
+            else
+            {
+                <p>No clubs found or an error happened please refresh the page or add clubs</p>
             }
         </div>
     }

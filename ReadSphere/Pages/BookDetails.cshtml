@@ -61,37 +61,41 @@
                 </div>
             </div>
         </div>
-
-        @foreach (var book in Model.book.Users_rating)
+        @if (Model.book.Users_rating != null && Model.book.Users_rating.Count > 0)
         {
-            <div class="book-review-card">
-                <div class="book-review-header">
-                    <h4 class="book-title">@book.Name</h4>
-                </div>
-                <div class="book-review-body">
-                    <p class="book-comment">@book.comment</p>
-                    <div class="book-rating">
-                        <span>Rating: </span>
-                        <span class="rating-stars">
-                            @* Generate star symbols based on the rating *@
-                            @for (int i = 0; i < 5; i++)
-                            {
-                                if (i < @Math.Round(@book.rating))
+            @foreach (var book in Model.book.Users_rating)
+            {
+                <div class="book-review-card">
+                    <div class="book-review-header">
+                        <h4 class="book-title">@book.Name</h4>
+                    </div>
+                    <div class="book-review-body">
+                        <p class="book-comment">@book.comment</p>
+                        <div class="book-rating">
+                            <span>Rating: </span>
+                            <span class="rating-stars">
+                                @for (int i = 0; i < 5; i++)
                                 {
-                                    <span class="star-filled">★</span>
+                                    if (i < @Math.Round(@book.rating))
+                                    {
+                                        <span class="star-filled">★</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="star-empty">★</span>
+                                    }
                                 }
-                                else
-                                {
-                                    <span class="star-empty">★</span>
-                                }
-                            }
-                        </span>
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            }
         }
-
+        else
+        {
+            <p>No Ratings were made</p>
+        }
 
     }
     else
