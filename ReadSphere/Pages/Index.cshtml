@@ -252,6 +252,65 @@
 
         </div>
     }
+    @if (Request.Cookies["is_admin"] == "admin")
+    {
+        <div class="container py-5 bg-white">
+            <h2 class="text-center mb-4">Statistics</h2>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Books </h5>
+                            <p class="card-text">@Model.TotalBooks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Clubs </h5>
+                            <p class="card-text">@Model.TotalClubs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Quotes Saved</h5>
+                            <p class="card-text">@Model.TotalQuotes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Notes Created</h5>
+                            <p class="card-text">@Model.TotalNotes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Users in System</h5>
+                            <p class="card-text">@Model.TotalUsers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
 
 </aside>
 
