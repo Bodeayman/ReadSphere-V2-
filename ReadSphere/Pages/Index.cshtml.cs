@@ -71,13 +71,43 @@ public class IndexModel : PageModel
     public int numberofpages { get; set; }
 
   }
-  //Didn't come yet
+  public int TotalBooks { get; set; }
+  public int TotalClubs { get; set; }
+  public int TotalQuotes { get; set; }
+  public int TotalNotes { get; set; }
+  public int TotalUsers { get; set; }
+  string connectionString = "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
   public List<Notification> ongoing { get; set; }
 
-  // Came
   public List<Notification> duegoing { get; set; }
 
+  private int GetCount(string query, string connectionString)
+  {
+    int count = 0;
+    using (SqlConnection connection = new SqlConnection(connectionString))
+    {
+      try
+      {
+        SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+        dataAdapter.SelectCommand.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
+        DataTable dataTable = new DataTable();
+        connection.Open();
+        dataAdapter.Fill(dataTable);
 
+
+        if (dataTable.Rows.Count > 0)
+        {
+          count = Convert.ToInt32(dataTable.Rows[0][0]);
+        }
+        connection.Close();
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError("An error occurred while retrieving the count: " + ex.Message);
+      }
+    }
+    return count;
+  }
   public IActionResult OnPost()
   {
     Response.Cookies.Delete("user_id");
@@ -90,6 +120,15 @@ public class IndexModel : PageModel
   {
 
 
+    TotalBooks = GetCount("SELECT COUNT(*) FROM book ", connectionString);
+
+    TotalClubs = GetCount("SELECT COUNT(*) FROM club ", connectionString);
+
+    TotalQuotes = GetCount("SELECT COUNT(*) FROM quote ", connectionString);
+
+    TotalNotes = GetCount("SELECT COUNT(*) FROM note ", connectionString);
+
+    TotalUsers = GetCount("SELECT COUNT(*) FROM [User]", connectionString);
 
     Console.WriteLine($"SearchQuery: {SearchQuery}");
     mybooks = new List<Book>();
@@ -109,6 +148,7 @@ public class IndexModel : PageModel
 
     using (SqlConnection connection = new SqlConnection("Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"))
     {
+
 
       SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
       dataAdapter.SelectCommand.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
