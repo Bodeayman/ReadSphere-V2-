@@ -1,0 +1,40 @@
+@model ViewModels.AddBookCatViewModel
+@{
+    ViewData["Title"] = "Add Book to Category";
+}
+
+@if (Context.Request.Cookies["is_admin"] != null)
+{
+    if (Context.Request.Cookies["User"] != null)
+    {
+        <form asp-action="Index" method="post" class="container mt-5">
+            <h2 class="mb-4">Add Book to Category</h2>
+
+            <div class="mb-3">
+                <label asp-for="BookID" class="form-label">Select Book</label>
+                <select asp-for="BookID" asp-items="@(new SelectList(Model.BooksList, "Id", "Title"))" class="form-select">
+                    <option value="">Select a Book</option>
+                </select>
+                <span asp-validation-for="BookID" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="CategoryID" />
+
+            <button type="submit" class="btn btn-primary">Add to Category</button>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-warning mt-5">
+            <h4>Access Denied</h4>
+            <p>Please sign in to continue.</p>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-danger mt-5">
+        <h4>Access Denied</h4>
+        <p>You must be an admin to add books to categories.</p>
+    </div>
+}

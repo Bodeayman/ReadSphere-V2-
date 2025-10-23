@@ -25,7 +25,7 @@
                                     View Details
                                 </a>
 
-                                <form method="post" asp-action="AddToUser" asp-controller="AllBooks">
+                                <form method="post" asp-action="AddToUser" asp-controller="AllBooks" asp-route-id="@book.Id">
                                     <input type="hidden" name="BookId" value="@book.Id" />
                                     <input type="submit" value="Add the book" class="btn btn-primary" />
                                 </form>
