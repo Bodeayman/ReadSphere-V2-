@@ -1,0 +1,55 @@
+@model ViewModels.AddGoalViewModel
+@{
+    ViewData["Title"] = "Add Goals";
+}
+
+@if (Context.Request.Cookies["User"] != null)
+{
+    <form asp-action="AddGoal" asp-controller="AddGoals" method="post">
+        <div class="container mt-5">
+            <h2 class="mb-4">Add Reading Goal</h2>
+
+            <div class="mb-3">
+                <label asp-for="NotiTime" class="form-label">Notification Time</label>
+                <input asp-for="NotiTime" type="datetime-local" class="form-control" />
+                <span asp-validation-for="NotiTime" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TargetPages" class="form-label">Target Pages</label>
+                <input asp-for="TargetPages" class="form-control" />
+                <span asp-validation-for="TargetPages" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="NotiMessage" class="form-label">Notification Message</label>
+                <input asp-for="NotiMessage" class="form-control" />
+                <span asp-validation-for="NotiMessage" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BookID" class="form-label">Select a Book</label>
+                <select asp-for="BookID" class="form-control">
+                    <option value="">-- Select a Book --</option>
+                    @foreach (var book in Model.BooksList)
+                    {
+                        <option value="@book.Id">@book.Title</option>
+                    }
+                </select>
+                <span asp-validation-for="BookID" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Goal</button>
+        </div>
+    </form>
+}
+else
+{
+    <div class="container mt-5">
+        <h2 class="text-danger">Access Denied — Please Sign In</h2>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

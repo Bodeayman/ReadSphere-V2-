@@ -173,7 +173,8 @@
             </div>
 
             <div class="">
-                <a href="/ChangePassword" class="btn btn-primary">Change your password</a>
+                <a asp-controller="ChangePassword" asp-action="ChangePassword" class="btn btn-primary">Change your
+                    password</a>
 
             </div>
         </div>
@@ -210,7 +211,7 @@
             @if (Request.Cookies["User"] != null)
             {
                 <div style="display:flex;flex-direction:row;">
-                    <a href="/AddGoals" class="btn btn-success">Add More Goals</a>
+                    <a asp-action="AddGoalPage" asp-controller="AddGoals" class="btn btn-success">Add More Goals</a>
                 </div>
             }
         </div>
