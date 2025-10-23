@@ -73,9 +73,9 @@ namespace Controllers
                             Author = row["Author_Name"].ToString(),
                             Publisher = row["Publisher"].ToString(),
                             Language = row["Language"].ToString(),
-                            cover_image = row["Cover_Image"].ToString(),
-                            avgRate = 0,
-                            Users_rating = new List<User_Rating>()
+                            CoverImage = row["Cover_Image"].ToString(),
+                            AvgRate = 0,
+                            UsersRatings = new List<UserRating>()
                         };
                         books.Add(book);
                     }

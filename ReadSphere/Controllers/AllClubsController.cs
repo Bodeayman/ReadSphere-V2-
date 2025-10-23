@@ -68,7 +68,7 @@ namespace ReadSphere.Controllers
                         Id = Convert.ToInt32(row["club_id"]),
                         Name = row["club_name"].ToString() ?? "Unknown",
                         Desc = row["club_description"].ToString() ?? "Unknown",
-                        users = new List<string>()
+                        Users = new List<string>()
                     };
 
                     SqlDataAdapter usersAdapter = new(usersQuery, connection);
@@ -79,7 +79,7 @@ namespace ReadSphere.Controllers
 
                     foreach (DataRow userRow in usersTable.Rows)
                     {
-                        club.users.Add(userRow["user_name"].ToString() ?? "Unknown");
+                        club.Users.Add(userRow["user_name"].ToString() ?? "Unknown");
                     }
 
                     clubs.Add(club);

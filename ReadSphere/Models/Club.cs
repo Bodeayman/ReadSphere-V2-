@@ -6,7 +6,7 @@ namespace Models
         public string Name { get; set; }
         public string Desc { get; set; }
 
-        public List<String> users { get; set; }
+        public List<String> Users { get; set; }
 
     }
 

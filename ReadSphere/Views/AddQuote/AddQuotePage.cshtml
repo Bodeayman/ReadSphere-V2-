@@ -1,0 +1,56 @@
+@model ViewModels.AddQuoteViewModel
+@{
+    ViewData["Title"] = "Add Quote";
+}
+
+@if (Context.Request.Cookies["User"] != null)
+{
+    <form asp-action="AddQuote" asp-controller="AddQuote" method="post">
+        <div class="container mt-5">
+            <h2 class="mb-4">Add Quote</h2>
+
+            <div class="mb-3">
+                <label asp-for="QuoteText" class="form-label"></label>
+                <textarea asp-for="QuoteText" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="QuoteText" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PageNumber" class="form-label"></label>
+                <input asp-for="PageNumber" class="form-control" />
+                <span asp-validation-for="PageNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BookID" class="form-label"></label>
+                <select asp-for="BookID" class="form-control">
+                    <option value="">-- Select a Book --</option>
+                    @foreach (var book in Model.BooksList)
+                    {
+                        <option value="@book.Id">@book.Title</option>
+                    }
+                </select>
+                <span asp-validation-for="BookID" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Add Quote</button>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success mt-3">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+        </div>
+    </form>
+}
+else
+{
+    <div class="container mt-5 text-center">
+        <h2 class="text-danger">Access Denied — Please Sign In</h2>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
