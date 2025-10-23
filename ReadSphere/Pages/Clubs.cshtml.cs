@@ -2,6 +2,7 @@ using System.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
+using Models;
 
 namespace ReadSphere.Pages
 {
@@ -13,16 +14,7 @@ namespace ReadSphere.Pages
         public int ClubId { get; set; }
 
 
-        public class Club
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Desc { get; set; }
 
-            public List<String> users { get; set; }
-
-
-        }
         public void OnGet()
         {
             Clubs = new List<Club>();

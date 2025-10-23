@@ -1,0 +1,123 @@
+@using ViewModels
+@model BookDetailsViewModel
+
+@{
+    ViewData["Title"] = "Book Details";
+}
+<link rel="stylesheet" href="~/css/bookdetails.css">
+
+<div class="container mt-5">
+    <h1 class="text-center">Book Details</h1>
+
+    @if (Model != null)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>@Model.Title</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Author</label>
+                            <input type="text" class="form-control" value="@Model.Author" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Publisher</label>
+                            <input type="text" class="form-control" value="@Model.Publisher" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Language</label>
+                            <input type="text" class="form-control" value="@Model.Language" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Average Rating</label>
+                            <input type="text" class="form-control" value="@Model.AvgRating" readonly />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.CoverImage))
+                    {
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">Cover Image</label>
+                                <img src="@Model.CoverImage" class="img-fluid" alt="Book Cover" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="form-group mt-4">
+                    <a href="/Book" class="btn btn-primary">Back to Book List</a>
+                </div>
+            </div>
+        </div>
+
+        <h4>User Ratings</h4>
+
+        @if (Model.UsersRating != null && Model.UsersRating.Count > 0)
+        {
+            @foreach (var userRating in Model.UsersRating)
+            {
+                <div class="book-review-card mb-3 p-3 border rounded">
+                    <div class="book-review-header">
+                        <h5>@userRating.Name</h5>
+                    </div>
+                    <div class="book-review-body">
+                        <p>@userRating.Comment</p>
+                        <div>
+                            Rating:
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                if (i < Math.Round(userRating.Rating))
+                                {
+                                    <span class="star-filled">★</span>
+                                }
+                                else
+                                {
+                                    <span class="star-empty">★</span>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No ratings yet.</p>
+        }
+
+        <!-- Optional: Form to add your own rating -->
+        <div class="mt-4">
+            <h5>Add Your Rating</h5>
+            <form asp-action="AddRating" method="post">
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <div class="mb-3">
+                    <label class="form-label">Rating (1-5)</label>
+                    <input type="number" name="Rating" class="form-control" min="1" max="5" value="@Model.Rating" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Comment</label>
+                    <textarea name="Comment" class="form-control">@Model.Comment</textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Submit Rating</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <strong>Warning!</strong> Book details not found.
+        </div>
+    }
+</div>

@@ -41,7 +41,8 @@
                                 <div class="book-info">
                                     <h4 class="book-title">@book.Title</h4>
                                     <p class="book-author">@book.Author</p>
-                                    <a class="book-rating" href="/AddReview?itemid=@book.Id">
+                                    <a class="book-rating" asp-controller="AddReview" asp-action="AddReview"
+                                        asp-route-id="@book.Id">
                                         ★★★★☆ @Math.Round(@book.avgRate, 2)
                                     </a>
 
@@ -58,7 +59,7 @@
 
                 @if (Request.Cookies["is_admin"] == "admin")
                 {
-                    <a class="btn btn-success" href="/AddBook">
+                    <a class="btn btn-success" asp-controller="AddBook" asp-action="AddBookPage">
                         Add New Book
                     </a>
                 }
@@ -227,7 +228,7 @@
                 {
                     <div class="book-card">
                         <div class="book-info">
-                            <h4 class="book-title">@club.name</h4>
+                            <h4 class="book-title">@club.Name</h4>
                         </div>
                     </div>
                 }

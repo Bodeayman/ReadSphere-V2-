@@ -1,0 +1,60 @@
+@model ViewModels.LoginViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login - ReadSphere</title>
+        <link rel="stylesheet" href="~/css/register.css" />
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="register-container">
+                <div class="logo-section">
+                    <h1>ReadSphere</h1>
+                    <p>Meet your next favorite book</p>
+                </div>
+
+                <form asp-action="Index" asp-controller="Login" method="post" class="register-form">
+                    <h2>Login</h2>
+
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <div class="form-group">
+                        <input asp-for="Email" class="form-control" placeholder="Email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger">@Model.ErrorMessage</div>
+                    }
+
+                    <button type="submit" asp-controller="Login" asp-action="Login" class="signup-btn">Login</button>
+
+                    <div class="login-link mt-3">
+                        Don't have an account? <a href="/Register">Sign up</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Client-side validation scripts -->
+        <script src="~/lib/jquery/jquery.min.js"></script>
+        <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    </body>
+
+</html>

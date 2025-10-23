@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Text.RegularExpressions;
+using Models;
 namespace ReadSphere.Pages;
 
 public class IndexModel : PageModel
@@ -23,54 +24,10 @@ public class IndexModel : PageModel
 
 
 
-  public class Notification
-  {
-    public string Message { get; set; }
-    public DateTime time { get; set; }
-    public string Title { get; set; }
-    public int pages { get; set; }
-  }
-  public class Book
-  {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public string Author { get; set; }
 
-    public string Publisher { get; set; }
-    public string Language { get; set; }
 
-    public string cover_image { get; set; }
 
-    public double avgRate { get; set; }
-  }
 
-  public class Club
-  {
-    public string name { get; set; }
-    public string desc { get; set; }
-
-  }
-
-  public class Note
-  {
-    public string author { get; set; }
-    public string desc { get; set; }
-
-    public DateTime dateTime { get; set; }
-    public string book { get; set; }
-
-    public int numberofpages { get; set; }
-  }
-  public class Quote
-  {
-    public string author { get; set; }
-    public string quote
-    { get; set; }
-    public DateTime dateTime { get; set; }
-    public string book { get; set; }
-    public int numberofpages { get; set; }
-
-  }
   public int TotalBooks { get; set; }
   public int TotalClubs { get; set; }
   public int TotalQuotes { get; set; }
@@ -231,9 +188,10 @@ public class IndexModel : PageModel
         string? desc = Convert.ToString(row["club_description"]);
         string? name = Convert.ToString(row["club_name"]); //
 
-        Club club = new();
-        club.desc = desc;
-        club.name = name;
+        Club club = new Club();
+        club.Desc = desc;
+        club.Name = name;
+        club.users = new List<String>();
 
         myclubs.Add(club);
       }
@@ -286,7 +244,7 @@ public class IndexModel : PageModel
 
 
 
-        Note note = new();
+        Note note = new Note();
         note.desc = desc;
         note.author = name;
         note.book = bookTitle;

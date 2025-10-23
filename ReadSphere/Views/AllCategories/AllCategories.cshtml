@@ -1,0 +1,54 @@
+@model List<ViewModels.CategoryViewModel>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="my-5">
+    <h1>Categories</h1>
+
+    @if (Context.Request.Cookies["User"] != null)
+    {
+        <p>This section will show the categories available in the university.</p>
+
+        <div class="row">
+            @foreach (var cat in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4" style="max-width: 300px;">
+                        <div class="card-body">
+                            <h5 class="card-title">@cat.Name</h5>
+                            <p class="card-text">@cat.Desc</p>
+                        </div>
+
+                        <div class="card-body">
+                            <h5>Books</h5>
+                            @if (cat.Books.Any())
+                            {
+                                @foreach (var book in cat.Books)
+                                {
+                                    <p>@book</p>
+                                }
+                            }
+                            else
+                            {
+                                <p><i>No books in this category yet.</i></p>
+                            }
+                        </div>
+
+                        @if (Context.Request.Cookies["is_admin"] == "admin")
+                        {
+                            <form asp-action="AddBookToCategory" method="post">
+                                <input type="hidden" name="CatId" value="@cat.Id" />
+                                <input type="submit" value="Add a book to category" class="btn btn-primary" />
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>You have to sign in to view the categories.</p>
+    }
+</div>
