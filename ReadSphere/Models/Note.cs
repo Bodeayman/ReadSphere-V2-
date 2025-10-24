@@ -2,13 +2,17 @@ namespace Models
 {
     public class Note
     {
+        public int Id { get; set; }
         public string Author { get; set; }
-        public string Desc { get; set; }
+        public string NoteText { get; set; }
 
         public DateTime DateTime { get; set; }
-        public string Book { get; set; }
 
-        public int NumberOfPages { get; set; }
+        public int BookId { get; set; }
+        public required Book Book { get; set; }
+
+
+        public int PageNumber { get; set; }
     }
 
 }

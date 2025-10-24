@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace ReadSphere.Controllers
 {
+    /*
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -180,4 +181,5 @@ namespace ReadSphere.Controllers
             return RedirectToAction("Index");
         }
     }
+    */
 }

@@ -75,7 +75,7 @@ namespace Controllers
                             Language = row["Language"].ToString(),
                             CoverImage = row["Cover_Image"].ToString(),
                             AvgRate = 0,
-                            UsersRatings = new List<UserRating>()
+                            UsersRatings = new List<Rating>()
                         };
                         books.Add(book);
                     }
