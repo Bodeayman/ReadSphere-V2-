@@ -6,7 +6,7 @@ namespace ViewModels
     public class UserRatingViewModel
     {
         public string Name { get; set; } = "";
-        public decimal Rating { get; set; }
+        public float Rating { get; set; }
         public string Comment { get; set; } = "";
     }
 
@@ -18,12 +18,12 @@ namespace ViewModels
         public string Publisher { get; set; } = "";
         public string Language { get; set; } = "";
         public string CoverImage { get; set; } = "";
-        public decimal AvgRating { get; set; }
+        public float AvgRating { get; set; }
 
         public List<UserRatingViewModel> UsersRating { get; set; } = new List<UserRatingViewModel>();
 
         // For binding user input
         public string? Comment { get; set; }
-        public decimal? Rating { get; set; }
+        public float? Rating { get; set; }
     }
 }

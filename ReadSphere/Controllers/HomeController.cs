@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 
 namespace ReadSphere.Controllers
 {
-    /*
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -104,12 +103,13 @@ namespace ReadSphere.Controllers
             da.Fill(dt);
             foreach (DataRow row in dt.Rows)
             {
-                Club club = new()
+
+                vm.MyClubs.Add(new Club
                 {
+                    Users = new List<User>(),
                     Name = row["club_name"].ToString(),
-                    Desc = row["club_description"].ToString()
-                };
-                vm.MyClubs.Add(club);
+                    Description = row["club_description"].ToString()
+                });
             }
 
             // Quotes
@@ -122,11 +122,11 @@ namespace ReadSphere.Controllers
             {
                 vm.MyQuotes.Add(new Quote
                 {
-                    Author = row["Author_Name"].ToString(),
-                    Book = row["Title"].ToString(),
-                    QuoteText = row["quote_text"].ToString(),
-                    DateTime = Convert.ToDateTime(row["added_date"]),
-                    NumberOfPages = Convert.ToInt32(row["page_number"])
+                    User = new User(),
+                    Book = new Book(),
+                    QuoteText = "This is a test Quote",
+                    CreatedAt = DateTime.Today,
+                    PageNumber = 1
                 });
             }
 
@@ -140,11 +140,11 @@ namespace ReadSphere.Controllers
             {
                 vm.MyNotes.Add(new Note
                 {
-                    Desc = row["note_text"].ToString(),
+                    NoteText = row["note_text"].ToString(),
                     Author = row["Author_Name"].ToString(),
-                    Book = row["Title"].ToString(),
+                    Book = new Book(),
                     DateTime = Convert.ToDateTime(row["added_date"]),
-                    NumberOfPages = Convert.ToInt32(row["page_number"])
+                    PageNumber = Convert.ToInt32(row["page_number"])
                 });
             }
 
@@ -158,12 +158,15 @@ namespace ReadSphere.Controllers
             {
                 var notif = new Notification
                 {
-                    Time = Convert.ToDateTime(row["notification_time"]),
+                    DueDate = DateTime.Today,
                     Message = row["notification_message"].ToString(),
-                    Title = row["Title"].ToString(),
+                    Goal = new Goal
+                    {
+                        Book = new Book()
+                    },
                     Pages = Convert.ToInt32(row["target_pages"])
                 };
-                if (DateTime.Now > notif.Time)
+                if (DateTime.Now > notif.DueDate)
                     vm.DueGoing.Add(notif);
                 else
                     vm.Ongoing.Add(notif);
@@ -181,5 +184,4 @@ namespace ReadSphere.Controllers
             return RedirectToAction("Index");
         }
     }
-    */
 }

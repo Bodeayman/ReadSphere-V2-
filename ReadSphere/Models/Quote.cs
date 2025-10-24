@@ -13,5 +13,8 @@ namespace Models
 
         public DateTime CreatedAt { get; set; }
 
+        public string UserId { get; set; }   // FK
+        public User User { get; set; }
+
     }
 }

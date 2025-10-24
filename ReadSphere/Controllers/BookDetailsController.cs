@@ -17,51 +17,55 @@ public class BookDetailsController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        Console.WriteLine("Working on the details page here");
         var model = new BookDetailsViewModel();
-        Console.WriteLine("ID is {0}", id);
-        Book RequestedBook = await _context.Books.FirstOrDefaultAsync(Book => Book.Id == id);
-        List<Rating> RatingsForBook = await _context.UserRating
-        .Where(Rating => Rating.BookId == id)
 
+        Book RequestedBook = await _context.Books.
+        FirstOrDefaultAsync(Book => Book.Id == id) ?? new Book();
+        List<Rating> RatingsForBook = await _context.Ratings
+        .Where(Rating => Rating.BookId == id).Include(Rating => Rating.User)
         .ToListAsync();
 
-        decimal totalRating = 0;
+        float totalRating = 0;
         int ratingCount = 0;
-
+        if (RequestedBook == null)
+        {
+            Console.WriteLine("This book is not found");
+            return View("BookDetails", model);
+        }
         foreach (Rating Rating in RatingsForBook)
         {
             var userRating = new UserRatingViewModel
             {
-                Name = row["User_Name"].ToString() ?? "",
+                Name = Rating.User.UserName,
                 Rating = Rating.Rate,
-                Comment = Rating.Comment
+                Comment = Rating.Comment ?? "Invalid Comment"
             };
             model.UsersRating.Add(userRating);
 
             totalRating += userRating.Rating;
             ratingCount++;
         }
+        float averageRate = CalculateAverageRating(totalRating, ratingCount);
+        Console.WriteLine("The average rate of this book is: {0}", averageRate);
+        model.Id = RequestedBook.Id;
+        model.Title = RequestedBook.Title;
+        model.Author = RequestedBook.Author;
+        model.Publisher = RequestedBook.Publisher;
+        model.Language = RequestedBook.Language;
+        model.CoverImage = RequestedBook.CoverImage;
+        model.AvgRating = averageRate;
 
-        if (bookTable.Rows.Count > 0)
-        {
-            var row = bookTable.Rows[0];
-            model.Id = Convert.ToInt32(row["Book_Id"]);
-            model.Title = row["Title"].ToString() ?? "";
-            model.Author = row["Author_Name"].ToString() ?? "";
-            model.Publisher = row["Publisher"].ToString() ?? "Unknown";
-            model.Language = row["Language"].ToString() ?? "Unknown";
-            model.CoverImage = row["Cover_Image"].ToString() ?? "";
-            model.AvgRating = ratingCount > 0 ? totalRating / ratingCount : 0;
-        }
 
-        Console.WriteLine(new
-        {
-            model.Id,
-            model.Title,
-            model.Author
-        });
         return View("BookDetails", model);
+    }
+
+    private static float CalculateAverageRating(float total, int number)
+    {
+        if (number > 0)
+        {
+            return total / number;
+        }
+        return 0;
     }
 
 

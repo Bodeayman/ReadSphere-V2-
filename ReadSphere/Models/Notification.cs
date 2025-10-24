@@ -11,5 +11,6 @@ namespace Models
         public int GoalId { get; set; }
         public required Goal Goal { get; set; }
 
+
     }
 }

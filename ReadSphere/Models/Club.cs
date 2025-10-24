@@ -8,6 +8,8 @@ namespace Models
 
         public required ICollection<User> Users { get; set; }
 
+
+
     }
 
 }

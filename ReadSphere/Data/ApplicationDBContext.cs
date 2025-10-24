@@ -16,7 +16,7 @@ namespace ReadSphere.Data
 
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Quote> Quotes { get; set; }
-        public DbSet<Rating> UserRating { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
         public DbSet<Category> Categories { get; set; }
 
     }

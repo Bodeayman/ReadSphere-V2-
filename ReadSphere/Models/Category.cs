@@ -8,5 +8,7 @@ namespace Models
 
         public required ICollection<Book> Books { get; set; }
 
+
+
     }
 }
