@@ -1,12 +1,22 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Models;
+using ReadSphere.Data;
 using System.Data;
 using ViewModels;
 
 public class LoginController : Controller
 {
-    private readonly string connectionString = "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
+    private readonly SignInManager<User> _signInManager;
+    private readonly ApplicationDBContext _context;
+
+    public LoginController(ApplicationDBContext context, SignInManager<User> signInManager)
+    {
+        _context = context;
+        _signInManager = signInManager;
+    }
     [HttpGet]
     public IActionResult Index()
     {
@@ -15,86 +25,29 @@ public class LoginController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        if (ValidateUser(model.Email!, model.Password!, out bool isAdmin, out string userId))
+        try
         {
-            Response.Cookies.Append(
-                "User",
-                model.Email!,
-                new CookieOptions
-                {
-                    Expires = DateTimeOffset.Now.AddHours(1),
-                    HttpOnly = true,
-                    Secure = true
-                });
-
-            Response.Cookies.Append(
-                "is_admin",
-                isAdmin ? "admin" : "not",
-                new CookieOptions
-                {
-                    Expires = DateTimeOffset.Now.AddHours(1),
-                    HttpOnly = true,
-                    Secure = true
-                });
-
-            Response.Cookies.Append(
-                "user_id",
-                userId,
-                new CookieOptions
-                {
-                    Expires = DateTimeOffset.Now.AddHours(1),
-                    HttpOnly = true,
-                    Secure = true
-                });
+            await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
 
             return RedirectToAction("Index", "Home");
         }
 
-        // Invalid credentials
-        model.ErrorMessage = "Invalid email or password.";
-        return View(model);
-    }
 
-    private bool ValidateUser(string email, string password, out bool isAdmin, out string userId)
-    {
-        isAdmin = false;
-        userId = string.Empty;
-
-        using (SqlConnection connection = new(connectionString))
+        catch (Exception err)
         {
-            string query = "SELECT * FROM [USER] WHERE Email = @Email AND PASSWORD = @Password";
-            SqlDataAdapter adapter = new(query, connection);
-            adapter.SelectCommand.Parameters.AddWithValue("@Email", email);
-            adapter.SelectCommand.Parameters.AddWithValue("@Password", password);
-
-            DataTable dataTable = new();
-
-            try
-            {
-                connection.Open();
-                adapter.Fill(dataTable);
-
-                if (dataTable.Rows.Count > 0)
-                {
-                    var row = dataTable.Rows[0];
-                    isAdmin = Convert.ToBoolean(row["Is_Admin"]);
-                    userId = Convert.ToString(row["User_Id"])!;
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error validating user: {ex.Message}");
-            }
+            model.ErrorMessage = "Invalid email or password.";
+            return View(model);
         }
+        // Invalid credentials
 
-        return false;
     }
+
+
 }

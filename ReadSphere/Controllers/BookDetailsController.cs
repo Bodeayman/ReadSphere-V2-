@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ public class BookDetailsController : Controller
     {
         _context = context;
     }
+    [Authorize]
+
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {

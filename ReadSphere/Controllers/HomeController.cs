@@ -4,6 +4,10 @@ using Models;
 using ViewModels;
 using System.Data;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
+
+
+
 
 namespace ReadSphere.Controllers
 {
@@ -17,6 +21,7 @@ namespace ReadSphere.Controllers
         {
             _logger = logger;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -40,6 +45,8 @@ namespace ReadSphere.Controllers
             }
             return count;
         }
+
+
 
         [HttpGet]
         public IActionResult Index(string? searchQuery)
