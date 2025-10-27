@@ -5,6 +5,9 @@ using ViewModels;
 using System.Data;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
+using ReadSphere.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 
 
@@ -14,12 +17,16 @@ namespace ReadSphere.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDBContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly string connectionString =
             "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDBContext context, UserManager<User> userManager)
         {
             _logger = logger;
+            _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -49,7 +56,7 @@ namespace ReadSphere.Controllers
 
 
         [HttpGet]
-        public IActionResult Index(string? searchQuery)
+        public async IActionResult Index(string? searchQuery)
         {
             if (Request.Cookies["user_id"] == null)
                 return View(new DashboardViewModel());
@@ -68,19 +75,22 @@ namespace ReadSphere.Controllers
             using SqlConnection connection = new(connectionString);
             connection.Open();
 
-            int userId = Convert.ToInt32(Request.Cookies["user_id"]);
 
             // Books
-            string queryBooks = "SELECT * FROM book WHERE book_id IN (SELECT BookId FROM booksPossess WHERE ownerid = @owner)";
-            SqlDataAdapter da = new(queryBooks, connection);
-            da.SelectCommand.Parameters.AddWithValue("@owner", userId);
-            DataTable dt = new();
-            da.Fill(dt);
+            /*
+            _context.Books.Where()
+            */
+            var userId = _userManager.GetUserId(User); // gets logged-in user's ID
 
-            foreach (DataRow row in dt.Rows)
+            var books = await _context.Books
+                .Where(b => b.Users.Any(u => u.Id == userId)) // filter books related to that user
+                .Include(b => b.Users)
+                .ToListAsync();
+
+            foreach (Book Book in books)
             {
-                var title = row["Title"].ToString()!;
-                var author = row["Author_Name"].ToString()!;
+                var title = Book.Title.ToString()!;
+                var author = Book.Author.ToString()!;
 
                 if (!string.IsNullOrEmpty(searchQuery))
                 {
@@ -91,40 +101,37 @@ namespace ReadSphere.Controllers
 
                 Book book = new()
                 {
-                    Id = Convert.ToInt32(row["Book_Id"]),
+                    Id = Convert.ToInt32(Book.Id),
                     Title = title,
                     Author = author,
-                    Publisher = row["Publisher"].ToString(),
-                    Language = row["Language"].ToString(),
-                    CoverImage = row["Cover_Image"].ToString()
+                    Publisher = Book.Publisher,
+                    Language = Book.Language,
+                    CoverImage = Book.CoverImage
                 };
 
                 vm.MyBooks.Add(book);
             }
 
             // Clubs
-            string queryClubs = "SELECT * FROM club WHERE club_id IN (SELECT club_id FROM clubs_joined WHERE user_id = @owner)";
-            da = new(queryClubs, connection);
-            da.SelectCommand.Parameters.AddWithValue("@owner", userId);
-            dt = new();
-            da.Fill(dt);
-            foreach (DataRow row in dt.Rows)
+
+            var Clubs = await _context.Clubs
+                .Where(b => b.Users.Any(C => C.Id == userId)) // filter books related to that user
+                .Include(b => b.Users)
+                .ToListAsync();
+            foreach (Club Club in Clubs)
             {
 
                 vm.MyClubs.Add(new Club
                 {
                     Users = new List<User>(),
-                    Name = row["club_name"].ToString(),
-                    Description = row["club_description"].ToString()
+                    Name = Club.Name,
+                    Description = Club.Description
                 });
             }
 
             // Quotes
             string queryQuotes = "SELECT * FROM quote JOIN book ON quote.book_id = book.Book_Id WHERE owner_quote_id = @owner";
-            da = new(queryQuotes, connection);
-            da.SelectCommand.Parameters.AddWithValue("@owner", userId);
-            dt = new();
-            da.Fill(dt);
+
             foreach (DataRow row in dt.Rows)
             {
                 vm.MyQuotes.Add(new Quote
