@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using ReadSphere.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using System.Xml;
 
 
 
@@ -31,6 +32,8 @@ namespace ReadSphere.Controllers
 
         public IActionResult Index()
         {
+
+
             return View();
         }
         private int GetCount(string query)
@@ -56,10 +59,19 @@ namespace ReadSphere.Controllers
 
 
         [HttpGet]
-        public async IActionResult Index(string? searchQuery)
+        public async Task<IActionResult> Index(string? searchQuery)
         {
-            if (Request.Cookies["user_id"] == null)
-                return View(new DashboardViewModel());
+            Console.WriteLine("Activating the program");
+            if (User.Identity != null)
+            {
+                Console.WriteLine($"Authenticated: {User.Identity.IsAuthenticated}");
+                Console.WriteLine($"User: {User.Identity.Name}");
+            }
+            else
+            {
+                Console.WriteLine("No user identity found.");
+            }
+
 
             DashboardViewModel vm = new DashboardViewModel();
 
@@ -99,17 +111,7 @@ namespace ReadSphere.Controllers
                         continue;
                 }
 
-                Book book = new()
-                {
-                    Id = Convert.ToInt32(Book.Id),
-                    Title = title,
-                    Author = author,
-                    Publisher = Book.Publisher,
-                    Language = Book.Language,
-                    CoverImage = Book.CoverImage
-                };
-
-                vm.MyBooks.Add(book);
+                vm.MyBooks.Add(Book);
             }
 
             // Clubs
@@ -121,53 +123,38 @@ namespace ReadSphere.Controllers
             foreach (Club Club in Clubs)
             {
 
-                vm.MyClubs.Add(new Club
-                {
-                    Users = new List<User>(),
-                    Name = Club.Name,
-                    Description = Club.Description
-                });
+                vm.MyClubs.Add(Club);
             }
 
             // Quotes
             string queryQuotes = "SELECT * FROM quote JOIN book ON quote.book_id = book.Book_Id WHERE owner_quote_id = @owner";
-
-            foreach (DataRow row in dt.Rows)
+            var Quotes = await _context.Quotes
+              .Where(b => b.UserId == userId) // filter books related to that user
+              .Include(b => b.Book)
+              .ToListAsync();
+            foreach (Quote Quote in Quotes)
             {
-                vm.MyQuotes.Add(new Quote
-                {
-                    User = new User(),
-                    Book = new Book(),
-                    QuoteText = "This is a test Quote",
-                    CreatedAt = DateTime.Today,
-                    PageNumber = 1
-                });
+                vm.MyQuotes.Add(Quote);
             }
 
             // Notes
             string queryNotes = "SELECT * FROM note JOIN book ON note.book_id = book.Book_Id WHERE owner_note_id = @owner";
-            da = new(queryNotes, connection);
-            da.SelectCommand.Parameters.AddWithValue("@owner", userId);
-            dt = new();
-            da.Fill(dt);
-            foreach (DataRow row in dt.Rows)
+            var Notes = await _context.Notes
+           .Where(b => b.UserId == userId) // filter books related to that user
+           .Include(b => b.Book)
+           .ToListAsync();
+            foreach (Note Note in Notes)
             {
-                vm.MyNotes.Add(new Note
-                {
-                    NoteText = row["note_text"].ToString(),
-                    Author = row["Author_Name"].ToString(),
-                    Book = new Book(),
-                    DateTime = Convert.ToDateTime(row["added_date"]),
-                    PageNumber = Convert.ToInt32(row["page_number"])
-                });
+                vm.MyNotes.Add(Note);
             }
-
+            /*
             // Notifications (Goals)
             string queryGoals = "SELECT * FROM notification, reading_goal, book WHERE notification.goal_id = reading_goal.goal_id AND book.Book_Id = reading_goal.book_id AND reading_goal.user_id = @owner";
-            da = new(queryGoals, connection);
-            da.SelectCommand.Parameters.AddWithValue("@owner", userId);
-            dt = new();
-            da.Fill(dt);
+            var Notifications =
+           await _context.Notifications
+           .Where(b => b.GoalId == userId) // filter books related to that user
+           .ToListAsync();
+
             foreach (DataRow row in dt.Rows)
             {
                 var notif = new Notification
@@ -185,6 +172,7 @@ namespace ReadSphere.Controllers
                 else
                     vm.Ongoing.Add(notif);
             }
+            */
 
             return View(vm);
         }

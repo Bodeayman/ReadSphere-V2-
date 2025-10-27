@@ -2,38 +2,53 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using ViewModels;
 using System.Data;
+using ReadSphere.Data;
+using Microsoft.AspNetCore.Identity;
+using Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReadSphere.Controllers
 {
     public class AddNoteController : Controller
     {
+        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDBContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly string _connectionString =
             "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
+        public AddNoteController(ILogger<HomeController> logger, ApplicationDBContext context, UserManager<User> userManager)
+        {
+            _logger = logger;
+            _context = context;
+            _userManager = userManager;
+        }
+
         [HttpGet]
-        public IActionResult AddNotePage()
+        public async Task<IActionResult> AddNotePage()
         {
             var model = new AddNoteViewModel();
-            int? userId = GetUserIdFromCookie();
+            string userId = _userManager.GetUserId(User);
 
             if (userId == null)
                 return RedirectToAction("Login", "Account");
 
-            model.BooksList = LoadUserBooks(userId.Value);
+            model.BooksList = await LoadUserBooks(userId);
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddNote(AddNoteViewModel model)
+        public async Task<IActionResult> AddNote(AddNoteViewModel model)
         {
-            int? userId = GetUserIdFromCookie();
+            string userId = _userManager.GetUserId(User);
+
             if (userId == null)
                 return RedirectToAction("Login", "Account");
 
             if (!ModelState.IsValid)
             {
-                model.BooksList = LoadUserBooks(userId.Value);
+                model.BooksList = await LoadUserBooks(userId);
                 return View("AddNotePage", model);
             }
 
@@ -52,7 +67,7 @@ namespace ReadSphere.Controllers
                 cmd.Parameters.AddWithValue("@note_text", model.NoteText);
                 cmd.Parameters.AddWithValue("@added_date", DateTime.Now);
                 cmd.Parameters.AddWithValue("@page", model.PageNumber);
-                cmd.Parameters.AddWithValue("@owner", userId.Value);
+                cmd.Parameters.AddWithValue("@owner", userId);
 
                 try
                 {
@@ -63,7 +78,7 @@ namespace ReadSphere.Controllers
                 {
                     Console.WriteLine($"SQL Error: {ex.Message}");
                     ModelState.AddModelError("", "An error occurred while adding the note.");
-                    model.BooksList = LoadUserBooks(userId.Value);
+                    model.BooksList = await LoadUserBooks(userId);
                     return View("AddNotePage", model);
                 }
             }
@@ -72,27 +87,25 @@ namespace ReadSphere.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private List<AddNoteViewModel.BookOption> LoadUserBooks(int userId)
+        private async Task<List<AddNoteViewModel.BookOption>> LoadUserBooks(string userId)
         {
             var books = new List<AddNoteViewModel.BookOption>();
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            var Books = await _context.Books
+              .Where(b => b.Users.Any(u => u.Id == userId))
+              .Select(b => new AddNoteViewModel.BookOption
+              {
+                  Id = b.Id,
+                  Title = b.Title
+              })
+              .ToListAsync();
+
+            foreach (var Book in Books)
             {
-                string query = "SELECT Book_id, title FROM book WHERE Book_id IN (SELECT BookId FROM booksPossess WHERE ownerid = @owner)";
-                SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
-                adapter.SelectCommand.Parameters.AddWithValue("@owner", userId);
-
-                DataTable dt = new();
-                connection.Open();
-                adapter.Fill(dt);
-
-                foreach (DataRow row in dt.Rows)
+                books.Add(new AddNoteViewModel.BookOption
                 {
-                    books.Add(new AddNoteViewModel.BookOption
-                    {
-                        Id = Convert.ToInt32(row["Book_id"]),
-                        Title = row["title"].ToString() ?? "Unknown"
-                    });
-                }
+                    Id = Book.Id,
+                    Title = Book.Title
+                });
             }
             return books;
         }

@@ -8,19 +8,19 @@ using ViewModels;
 
 public class RegisterController : Controller
 {
-    private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
-    private readonly ApplicationDBContext _context;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public RegisterController(ApplicationDBContext context, UserManager<User> userManager)
+    public RegisterController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
     {
-        _context = context;
+        _roleManager = roleManager;
         _userManager = userManager;
     }
 
     [HttpGet]
-    public IActionResult Register()
+    public IActionResult RegisterPage()
     {
+        Console.WriteLine("Nothing returning yet");
         return View("Register", new RegisterViewModel());
     }
 
@@ -43,13 +43,35 @@ public class RegisterController : Controller
                 UserName = model.Name,
                 Role = Enums.UserRoles.User,
 
+
             };
             IdentityResult UserRegisterd = await _userManager.CreateAsync(newRegisteredUser, model.Password!);
             if (UserRegisterd.Succeeded)
             {
-                Console.WriteLine("You registerd Successfully you dump bas*ard");
+                {
+                    string role = "Admin";
+
+                    // Ensure the role exists
+                    if (!await _roleManager.RoleExistsAsync(role))
+                        await _roleManager.CreateAsync(new IdentityRole(role));
+
+                    // Assign the role
+                    await _userManager.AddToRoleAsync(newRegisteredUser, role);
+
+                    return RedirectToAction("Index", "Home");
+                }
+
+
             }
-            return RedirectToAction("Index", "Home");
+            else
+            {
+                foreach (IdentityError Result in UserRegisterd.Errors)
+                {
+                    Console.WriteLine(Result.Description + " " + Result.Code);
+                }
+                model.ErrorMessage = "Invalid registering";
+                return RedirectToAction("RegisterPage", new RegisterViewModel());
+            }
         }
 
 
