@@ -1,25 +1,21 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using ViewModels;
-using System.Data;
-using ReadSphere.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ReadSphere.Data;
+using Models;
+using ViewModels;
 
 namespace ReadSphere.Controllers
 {
+    [Authorize]
     public class AddNoteController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDBContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly string _connectionString =
-            "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
-        public AddNoteController(ILogger<HomeController> logger, ApplicationDBContext context, UserManager<User> userManager)
+        public AddNoteController(ApplicationDBContext context, UserManager<User> userManager)
         {
-            _logger = logger;
             _context = context;
             _userManager = userManager;
         }
@@ -27,13 +23,20 @@ namespace ReadSphere.Controllers
         [HttpGet]
         public async Task<IActionResult> AddNotePage()
         {
-            var model = new AddNoteViewModel();
-            string userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
 
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
+            var model = new AddNoteViewModel
+            {
+                BooksList = await _context.Books
+                                    .Where(b => b.Users.Any(u => u.Id == user.Id))
+                                    .Select(b => new AddNoteViewModel.BookOption
+                                    {
+                                        Id = b.Id,
+                                        Title = b.Title
+                                    })
+                                    .ToListAsync()
+            };
 
-            model.BooksList = await LoadUserBooks(userId);
             return View(model);
         }
 
@@ -41,81 +44,67 @@ namespace ReadSphere.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddNote(AddNoteViewModel model)
         {
-            string userId = _userManager.GetUserId(User);
-
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
+            var user = await _userManager.GetUserAsync(User);
 
             if (!ModelState.IsValid)
             {
-                model.BooksList = await LoadUserBooks(userId);
+                model.BooksList = await _context.Books
+                                        .Where(b => b.Users.Any(u => u.Id == user.Id))
+                                        .Select(b => new AddNoteViewModel.BookOption
+                                        {
+                                            Id = b.Id,
+                                            Title = b.Title
+                                        })
+                                        .ToListAsync();
                 return View("AddNotePage", model);
             }
 
-            Random random = new();
-            int randomNumber = random.Next(0, 10000);
-
-            string query = @"INSERT INTO Note 
-                            (Note_Id, Book_Id, Note_Text, Added_date, Page_number, owner_note_id)
-                             VALUES (@id, @book_id, @note_text, @added_date, @page, @owner)";
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            try
             {
-                SqlCommand cmd = new SqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@id", randomNumber);
-                cmd.Parameters.AddWithValue("@book_id", model.BookID);
-                cmd.Parameters.AddWithValue("@note_text", model.NoteText);
-                cmd.Parameters.AddWithValue("@added_date", DateTime.Now);
-                cmd.Parameters.AddWithValue("@page", model.PageNumber);
-                cmd.Parameters.AddWithValue("@owner", userId);
+                var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == model.BookID);
 
-                try
+                var note = new Note
                 {
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"SQL Error: {ex.Message}");
-                    ModelState.AddModelError("", "An error occurred while adding the note.");
-                    model.BooksList = await LoadUserBooks(userId);
-                    return View("AddNotePage", model);
-                }
+                    BookId = model.BookID,
+                    Book = book,
+                    NoteText = model.NoteText,
+                    PageNumber = model.PageNumber,
+                    DateTime = DateTime.Now,
+                    User = user,
+                    Author = "",
+                    UserId = user.Id
+                };
+
+                _context.Notes.Add(note);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Note added successfully!";
+                return RedirectToAction("Index", "Home");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                ModelState.AddModelError("", "Failed to add note.");
 
-            TempData["SuccessMessage"] = "Note added successfully!";
-            return RedirectToAction("Index", "Home");
+                model.BooksList = await _context.Books
+                                        .Where(b => b.Users.Any(u => u.Id == user.Id))
+                                        .Select(b => new AddNoteViewModel.BookOption
+                                        {
+                                            Id = b.Id,
+                                            Title = b.Title
+                                        })
+                                        .ToListAsync();
+                return View("AddNotePage", model);
+            }
         }
 
-        private async Task<List<AddNoteViewModel.BookOption>> LoadUserBooks(string userId)
+        // Optional: Get all notes related to the user
+        private async Task<List<Note>> GetUserNotes(string userId)
         {
-            var books = new List<AddNoteViewModel.BookOption>();
-            var Books = await _context.Books
-              .Where(b => b.Users.Any(u => u.Id == userId))
-              .Select(b => new AddNoteViewModel.BookOption
-              {
-                  Id = b.Id,
-                  Title = b.Title
-              })
-              .ToListAsync();
-
-            foreach (var Book in Books)
-            {
-                books.Add(new AddNoteViewModel.BookOption
-                {
-                    Id = Book.Id,
-                    Title = Book.Title
-                });
-            }
-            return books;
-        }
-
-        private int? GetUserIdFromCookie()
-        {
-            var cookie = Request.Cookies["user_id"];
-            if (int.TryParse(cookie, out int id))
-                return id;
-            return null;
+            return await _context.Notes
+                        .Include(n => n.Book)
+                        .Where(n => n.UserId == userId)
+                        .ToListAsync();
         }
     }
 }

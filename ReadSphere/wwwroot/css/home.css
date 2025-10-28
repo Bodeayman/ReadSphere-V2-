@@ -1,11 +1,14 @@
-/* :root {
+:root {
     --primary-color: #382110;
     --secondary-color: #755742;
     --accent-color: #f4f1ea;
     --text-color: #333333;
     --link-color: #00635d;
+    --bg-color: #f9f7f4;
+    --card-bg: #ffffff;
+    --card-shadow: rgba(0, 0, 0, 0.1);
 }
-*/
+
 * {
     margin: 0;
     padding: 0;
@@ -13,52 +16,40 @@
 }
 
 body {
-    font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
-    background-color: #f9f7f4;
+    font-family: 'Lato', sans-serif;
+    background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.5;
 }
 
 header {
     background-color: var(--accent-color);
-    padding: 1rem;
+    padding: 1rem 2rem;
     border-bottom: 1px solid #d8d8d8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-
-
-
-
 
 .logo {
     font-weight: bold;
     color: var(--primary-color);
+    font-size: 1.5rem;
 }
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .nav-links a {
-    text-decoration: none;
     color: var(--primary-color);
-    font-weight: bold;
+    text-decoration: none;
+    font-weight: 600;
 }
 
 .nav-links a.active {
     color: var(--secondary-color);
-}
-
-.search-container {
-    display: flex;
-    align-items: center;
-}
-
-.search-container input {
-    padding: 0.5rem;
-    border: 1px solid #DCD6CC;
-    border-radius: 3px;
-    margin-right: 0.5rem;
 }
 
 main {
@@ -70,282 +61,61 @@ main {
     padding: 0 1rem;
 }
 
-.reading-widget {
-    background: white;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.reading-widget,
+.books-section,
+.carousel-section,
+.awards-banner,
+.challenge-stats .card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px var(--card-shadow);
     padding: 1.5rem;
-}
-
-.reading-status {
     margin-bottom: 2rem;
 }
 
 .search-box {
     display: flex;
+    gap: 0.5rem;
     margin-top: 1rem;
 }
 
 .search-box input {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
     border: 1px solid #DCD6CC;
-    border-radius: 3px;
 }
 
-.carousel-section {
-    margin: 2rem 0;
-    padding: 1rem;
-    background: var(--accent-color);
-    border-radius: 8px;
-}
-
-.carousel-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.quote-card,
-.note-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.quote-text {
-    font-size: 1.25rem;
-    font-style: italic;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-}
-
-.quote-author {
-    font-size: 1rem;
-    color: var(--secondary-color);
-    text-align: right;
-}
-
-.note-card h4 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-}
-
-.note-date {
-    color: #666;
-    font-size: 0.9rem;
-    margin-top: auto;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-color: var(--primary-color);
-    border-radius: 50%;
-    padding: 1rem;
-}
-
-.reading-challenge {
-    background: #f4f1ea;
-    padding: 1.5rem;
-    border-radius: 4px;
-    margin-bottom: 2rem;
-}
-
-.challenge-stats {
-    display: flex;
-    gap: 2rem;
-    margin: 1rem 0;
-}
-
-.year {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: var(--primary-color);
-}
-
-.stats h2 {
-    font-size: 2rem;
-    color: var(--primary-color);
-}
-
-.behind {
-    color: #cc2424;
-    font-size: 0.9rem;
-}
-
-.progress-bar {
-    height: 0.5rem;
-    background: #ddd;
-    border-radius: 4px;
-    margin: 1rem 0;
-}
-
-.progress {
-    height: 100%;
-    background: #3b8442;
-    border-radius: 4px;
-}
-
-.view-challenge {
-    background: var(--link-color);
-    color: white;
-    border: none;
+.search-box button {
     padding: 0.5rem 1rem;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-.updates-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.customize {
-    background: none;
     border: none;
-    color: var(--link-color);
-    cursor: pointer;
-}
-
-.awards-banner {
-    background: #2c4d3c;
-    color: white;
-    padding: 2rem;
     border-radius: 4px;
-    text-align: center;
-}
-
-.vote-btn {
-    background: #fdd05f;
-    color: #2c4d3c;
-    border: none;
-    padding: 0.8rem 2rem;
-    border-radius: 3px;
-    margin: 1rem 0;
-    font-weight: bold;
+    background-color: var(--primary-color);
+    color: var(--accent-color);
     cursor: pointer;
+    transition: background 0.2s;
 }
 
-.vote-count {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
-
-.carousel-item {
-    -o-transition: transform 0.8s ease-in-out !important;
-    -webkit-transition: transform 0.8s ease-in-out !important;
-    -moz-transition: transform 0.8s ease-in-out !important;
-    -ms-transition: transform 0.8s ease-in-out !important;
-    transition: transform 0.8s ease-in-out !important;
-}
-
-:root {
-    --primary-color: #382110;
-    --secondary-color: #755742;
-    --accent-color: #f4f1ea;
-    --text-color: #333333;
-    --link-color: #00635d;
-}
-
-body {
-    font-family: 'Lato', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--accent-color);
-}
-
-
-.logo {
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    margin: 0 1rem;
-}
-
-.nav-links a.active {
-    font-weight: bold;
-}
-
-.search-container input {
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: none;
-}
-
-main {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
-}
-
-.reading-widget {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.carousel-item {
-    transition: transform 0.8s ease-in-out !important;
-}
-
-.quote-card,
-.note-card {
-    background-color: var(--accent-color);
-    padding: 2rem;
-    border-radius: 8px;
-    margin: 1rem;
-    min-height: 200px;
-}
-
-.quote-text {
-    font-size: 1.2rem;
-    font-style: italic;
-    margin-bottom: 1rem;
-}
-
-.quote-author {
-    font-weight: bold;
-}
-
-.books-section {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.search-box button:hover {
+    background-color: var(--secondary-color);
 }
 
 .books-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1.5rem;
-    padding: 1rem 0;
 }
 
 .book-card {
     background-color: var(--accent-color);
     border-radius: 8px;
     overflow: hidden;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .book-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 6px 15px var(--card-shadow);
 }
 
 .book-cover {
@@ -359,20 +129,51 @@ main {
 }
 
 .book-title {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: bold;
-    margin: 0;
+    margin-bottom: 0.25rem;
 }
 
 .book-author {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--secondary-color);
-    margin: 0.5rem 0;
+    margin-bottom: 0.5rem;
 }
 
 .book-rating {
-    color: #f39c12;
     font-size: 0.8rem;
+    color: #f39c12;
+}
+
+.quote-card,
+.note-card {
+    background-color: var(--accent-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.quote-card:hover,
+.note-card:hover {
+    transform: translateY(-3px);
+}
+
+.quote-text {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.quote-author {
+    font-weight: bold;
+    color: var(--secondary-color);
+    text-align: right;
 }
 
 .sidebar {
@@ -380,100 +181,65 @@ main {
     top: 2rem;
 }
 
-.awards-banner {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.vote-btn {
-    background-color: var(--link-color);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 1rem 0;
-}
-
-.vote-count {
-    color: var(--secondary-color);
-    font-size: 0.9rem;
-}
-
 .challenge-stats {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-}
-
-.card {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    padding: 15px;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    gap: 1rem;
 }
 
 .card-header {
-    background-color: #2196f3;
-    color: white;
-    padding: 15px;
-    font-size: 1.25rem;
     font-weight: 600;
-    border-radius: 8px 8px 0 0;
-}
-
-.year {
-    font-size: 0.9rem;
-    color: #888;
-    margin-bottom: 10px;
-}
-
-.card-body {
-    padding: 15px;
-    font-size: 1rem;
-    color: #444;
-}
-
-.message {
-    font-size: 1rem;
-    color: #555;
-    line-height: 1.6;
-    margin-top: 15px;
-    border-left: 4px solid #2196f3;
-    padding-left: 15px;
-}
-
-.message p {
-    margin: 0;
-}
-
-.card-header {
+    font-size: 1.1rem;
+    padding-bottom: 0.5rem;
     border-bottom: 2px solid #e3e3e3;
 }
 
-.card:last-child {
-    margin-bottom: 40px;
+.card-body p {
+    font-size: 0.95rem;
+    color: #555;
+    margin: 0.25rem 0;
+}
+
+.carousel-section {
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: var(--accent-color);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    padding: 1rem;
+}
+
+button,
+a.btn {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button:hover,
+a.btn:hover {
+    opacity: 0.85;
+}
+
+@media screen and (max-width: 1024px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
 }
 
 @media screen and (max-width: 768px) {
-    .challenge-stats {
-        padding: 10px;
+    .search-box {
+        flex-direction: column;
     }
 
-    .card {
-        margin: 0 5px;
+    .search-box button {
+        width: 100%;
     }
 }

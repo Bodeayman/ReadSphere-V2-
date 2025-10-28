@@ -1,46 +1,65 @@
 @model ViewModels.ClubViewModel
+@{
+    ViewData["Title"] = "Clubs";
+}
 
-<h1 class="my-5">Clubs</h1>
+<div class="container my-5">
+    <h1 class="text-center mb-4 fw-bold">Clubs</h1>
 
-<div class="book-list row">
-    @if (Context.Request.Cookies["User"] != null)
+    @if (User.Identity.IsAuthenticated)
     {
-        if (Model.Clubs.Any())
+        @if (Model.Clubs.Any())
         {
-            foreach (var club in Model.Clubs)
-            {
-                <div class="col-md-4">
-                    <article class="book-item">
-                        <div class="card mb-4 shadow-sm">
+            <div class="row g-4 justify-content-center">
+                @foreach (var club in Model.Clubs)
+                {
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card shadow-sm border-0 h-100">
                             <div class="card-body">
-                                <h3 class="card-title">@club.Name</h3>
-                                <p class="text-muted">@club.Description</p>
+                                <h5 class="card-title text-primary">@club.Name</h5>
+                                <p class="card-text text-secondary">@club.Description</p>
 
-                                <h6>Members:</h6>
-                                <ul>
-                                    @foreach (var user in club.Users)
-                                    {
-                                        <li>@user</li>
-                                    }
-                                </ul>
+                                <hr />
 
-                                <form asp-action="Join" asp-controller="AllClubs" method="post">
+                                <h6 class="fw-semibold">Members</h6>
+                                @if (club.Users.Any())
+                                {
+                                    <ul class="list-unstyled mb-3">
+                                        @foreach (var user in club.Users)
+                                        {
+                                            <li class="text-muted">• @user</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted"><i>No members yet.</i></p>
+                                }
+
+                                <form asp-action="Join" asp-controller="AllClubs" asp-route-id="@club.Id" method="post"
+                                    class="mt-3">
                                     <input type="hidden" name="clubId" value="@club.Id" />
-                                    <input type="submit" value="Join Club" class="btn btn-primary" />
+                                    <button type="submit" class="btn btn-outline-primary w-100">
+                                        Join Club
+                                    </button>
                                 </form>
                             </div>
                         </div>
-                    </article>
-                </div>
-            }
+                    </div>
+                }
+            </div>
         }
         else
         {
-            <p>No clubs available.</p>
+            <div class="alert alert-info text-center mt-5">
+                No clubs available.
+            </div>
         }
     }
     else
     {
-        <p>You need to sign in to view clubs.</p>
+        <div class="alert alert-info text-center mt-5">
+            You need to sign in to view clubs.
+        </div>
     }
 </div>

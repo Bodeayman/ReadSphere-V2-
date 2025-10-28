@@ -3,11 +3,11 @@
     ViewData["Title"] = "Add Book to Category";
 }
 
-@if (Context.Request.Cookies["is_admin"] != null)
+@if (User.IsInRole("Admin"))
 {
-    if (Context.Request.Cookies["User"] != null)
+    if (User.Identity.IsAuthenticated)
     {
-        <form asp-action="Index" method="post" class="container mt-5">
+        <form asp-action="AddBookToCategory" method="post" class="container mt-5">
             <h2 class="mb-4">Add Book to Category</h2>
 
             <div class="mb-3">

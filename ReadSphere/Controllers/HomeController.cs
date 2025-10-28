@@ -126,6 +126,14 @@ namespace ReadSphere.Controllers
                 vm.MyClubs.Add(Club);
             }
 
+            var Categories = await _context.Categories
+               .ToListAsync();
+            foreach (Category category in Categories)
+            {
+
+                vm.MyCategories.Add(category);
+            }
+
             // Quotes
             string queryQuotes = "SELECT * FROM quote JOIN book ON quote.book_id = book.Book_Id WHERE owner_quote_id = @owner";
             var Quotes = await _context.Quotes

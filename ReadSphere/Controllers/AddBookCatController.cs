@@ -1,64 +1,75 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using ReadSphere.Data;
 using ViewModels;
+using Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ReadSphere.Controllers
 {
     public class AddBookCatController : Controller
     {
-        private readonly string _connectionString =
-            "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
+        private readonly ApplicationDBContext _context;
+
+        public AddBookCatController(ApplicationDBContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
-        public IActionResult Index(int catId)
+        public async Task<IActionResult> GetBookCatPage(int id)
         {
-            var model = new AddBookCatViewModel { CategoryID = catId };
-            model.BooksList = GetBooks();
+            var model = new AddBookCatViewModel
+            {
+                CategoryID = id,
+                BooksList = await _context.Books
+                    .Select(b => new BookItem
+                    {
+                        Id = b.Id,
+                        Title = b.Title
+                    })
+                    .ToListAsync()
+            };
+
             return View("AddBookCat", model);
         }
 
         [HttpPost]
-        public IActionResult Index(AddBookCatViewModel model)
+        public async Task<IActionResult> AddBookToCategory(AddBookCatViewModel model)
         {
-            var userId = Request.Cookies["user_id"];
-            if (string.IsNullOrEmpty(userId))
-                return RedirectToAction("Login", "Account");
-
-            AddBookToCategory(Convert.ToInt32(userId), model.BookID, model.CategoryID);
-            return RedirectToAction("Index", "Home");
-        }
-
-        private List<BookItem> GetBooks()
-        {
-            var list = new List<BookItem>();
-            using var connection = new SqlConnection(_connectionString);
-            string query = "SELECT Book_id, title FROM book";
-            using var adapter = new SqlDataAdapter(query, connection);
-            var table = new DataTable();
-            adapter.Fill(table);
-
-            foreach (DataRow row in table.Rows)
+            try
             {
-                list.Add(new BookItem
-                {
-                    Id = Convert.ToInt32(row["Book_id"]),
-                    Title = row["title"].ToString()
-                });
+                // Ensure valid model
+                if (!ModelState.IsValid)
+                    return View("AddBookCat", model);
+
+                // Retrieve entities
+                var book = await _context.Books.FindAsync(model.BookID);
+                var category = await _context.Categories
+                    .Include(c => c.Books)
+                    .FirstOrDefaultAsync(c => c.Id == model.CategoryID);
+
+                if (book == null || category == null)
+                    return NotFound();
+
+                // Avoid duplicate entries
+                if (category.Books.Any(b => b.Id == book.Id))
+                    return RedirectToAction("Index", "Home");
+
+                // Add relation
+                category.Books.Add(book);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index", "Home");
             }
-            return list;
-        }
-
-        private void AddBookToCategory(int userId, int bookId, int categoryId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            string query = "INSERT INTO book_category (book_id, category_id) VALUES (@BookId, @CategoryId)";
-            using var command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@BookId", bookId);
-            command.Parameters.AddWithValue("@CategoryId", categoryId);
-
-            connection.Open();
-            command.ExecuteNonQuery();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding book to category: {ex.Message}");
+                return RedirectToAction("Index", "Home");
+            }
         }
     }
 }

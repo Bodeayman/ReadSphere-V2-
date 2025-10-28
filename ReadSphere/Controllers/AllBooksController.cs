@@ -85,18 +85,22 @@ namespace Controllers
         {
             bool success = false;
             {
-                string checkBookExistsQuery = "SELECT COUNT(*) FROM BOOK WHERE Book_Id = @BookId";
-                string insertQuery = "INSERT INTO BooksPossess (OwnerId, BookId) VALUES (@UserId, @BookId)";
+
 
                 try
                 {
                     var user = await _userManager.FindByIdAsync(userId);
-
+                    if (user == null)
+                    {
+                        return false;
+                    }
                     var book = await _context.Books.FindAsync(bookId);
                     _context.Entry(user).Collection(u => u.Books).Load();
 
                     user.Books.Add(book);
+                    success = true;
                     await _context.SaveChangesAsync();
+
 
                 }
                 catch (Exception ex)

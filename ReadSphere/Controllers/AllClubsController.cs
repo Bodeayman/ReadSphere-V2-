@@ -1,131 +1,83 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using ReadSphere.Data;
 using Models;
+using ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using ViewModels;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace ReadSphere.Controllers
 {
     public class AllClubsController : Controller
     {
-        private readonly string connectionString =
-            "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
+        private readonly ApplicationDBContext _context;
+        private readonly UserManager<User> _userManager;
 
-        // GET: /Clubs
+        public AllClubsController(ApplicationDBContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+
+        // GET: /AllClubs
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var viewModel = new ClubViewModel();
-            viewModel.Clubs = GetAllClubs();
-            viewModel.Count = viewModel.Clubs.Count;
-            return View("AllClubs", viewModel);
+            try
+            {
+                var clubs = await _context.Clubs
+                    .Include(c => c.Users)
+                    .ToListAsync();
+
+                var viewModel = new ClubViewModel
+                {
+                    Clubs = clubs,
+                    Count = clubs.Count
+                };
+
+                return View("AllClubs", viewModel);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return View("Index", "Home");
+
+            }
         }
 
-        // POST: /Clubs/Join
-        [HttpPost]
-        public IActionResult Join(int clubId)
+        // POST: /AllClubs/Join[HttpPost]
+        public async Task<IActionResult> Join(int clubId)
         {
-            string userId = Request.Cookies["user_id"];
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return RedirectToAction("Login", "Account");
 
-            if (string.IsNullOrEmpty(userId))
-                return RedirectToAction("Login", "Account");
+                var club = await _context.Clubs.FindAsync(clubId);
+                if (club == null)
+                    return NotFound();
 
-            bool success = AddClubToUser(Convert.ToInt32(userId), clubId);
+                // Load user’s joined clubs
+                await _context.Entry(user).Collection(u => u.Clubs).LoadAsync();
 
-            if (success)
+                // Prevent duplicate join
+                if (user.Clubs.Any(c => c.Id == clubId))
+                    return RedirectToAction("Index");
+
+                user.Clubs.Add(club);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction("Index", "Home");
-
-            return RedirectToAction("Index");
-        }
-
-        // Helper: Get all clubs
-        private List<Club> GetAllClubs()
-        {
-            List<Club> clubs = new();
-
-            using SqlConnection connection = new(connectionString);
-            string query = "SELECT * FROM club";
-            string usersQuery = @"
-                SELECT [User].User_Name 
-                FROM [User], club, CLUBS_JOINED 
-                WHERE club.club_id = clubs_joined.club_id 
-                  AND clubs_joined.user_id = [User].user_id 
-                  AND club.club_id = @club_id";
-
-            try
-            {
-                connection.Open();
-                SqlDataAdapter adapter = new(query, connection);
-                DataTable table = new();
-                adapter.Fill(table);
-
-                foreach (DataRow row in table.Rows)
-                {
-                    var club = new Club
-                    {
-                        Id = Convert.ToInt32(row["club_id"]),
-                        Name = row["club_name"].ToString() ?? "Unknown",
-                        Description = row["club_description"].ToString() ?? "Unknown",
-                        Users = new List<User>()
-                    };
-
-                    SqlDataAdapter usersAdapter = new(usersQuery, connection);
-                    usersAdapter.SelectCommand.Parameters.AddWithValue("@club_id", club.Id);
-
-                    DataTable usersTable = new();
-                    usersAdapter.Fill(usersTable);
-
-                    foreach (DataRow userRow in usersTable.Rows)
-                    {
-                    }
-
-                    clubs.Add(club);
-                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error fetching clubs: {ex.Message}");
+                Console.WriteLine(ex.Message);
+                return RedirectToAction("Index", "Home");
             }
-
-            return clubs;
-        }
-
-        // Helper: Add club to user
-        private bool AddClubToUser(int userId, int clubId)
-        {
-            using SqlConnection connection = new(connectionString);
-            string checkClubQuery = "SELECT COUNT(*) FROM dbo.Club WHERE Club_id = @Club_id";
-            string insertQuery = "INSERT INTO clubs_joined (user_id, club_id) VALUES (@UserId, @ClubId)";
-
-            try
-            {
-                connection.Open();
-
-                using SqlCommand checkCmd = new(checkClubQuery, connection);
-                checkCmd.Parameters.AddWithValue("@Club_id", clubId);
-                int clubExists = (int)checkCmd.ExecuteScalar();
-
-                if (clubExists > 0)
-                {
-                    using SqlCommand insertCmd = new(insertQuery, connection);
-                    insertCmd.Parameters.AddWithValue("@UserId", userId);
-                    insertCmd.Parameters.AddWithValue("@ClubId", clubId);
-                    insertCmd.ExecuteNonQuery();
-                    return true;
-                }
-                else
-                {
-                    Console.WriteLine("Club does not exist.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error adding club: {ex.Message}");
-            }
-
-            return false;
         }
     }
 }

@@ -1,72 +1,53 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using ReadSphere.Data;
 using ViewModels;
-using System.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ReadSphere.Controllers
 {
     public class AllCategoriesController : Controller
     {
-        private readonly string _connectionString =
-            "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
+        private readonly ApplicationDBContext _context;
 
-        public IActionResult Index()
+        public AllCategoriesController(ApplicationDBContext context)
         {
-            var categories = new List<CategoryViewModel>();
+            _context = context;
+        }
 
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            try
             {
-                string categoryQuery = "SELECT * FROM category";
-                string booksQuery = @"
-                    SELECT book.Title 
-                    FROM book_category 
-                    JOIN book ON book.book_id = book_category.Book_Id 
-                    WHERE book_category.Category_Id = @cat_id";
-
-                try
-                {
-                    connection.Open();
-                    SqlDataAdapter adapter = new SqlDataAdapter(categoryQuery, connection);
-                    DataTable categoryTable = new DataTable();
-                    adapter.Fill(categoryTable);
-
-                    foreach (DataRow row in categoryTable.Rows)
+                // Fetch all categories with related books
+                var categories = await _context.Categories
+                    .Include(c => c.Books)
+                    .Select(c => new CategoryViewModel
                     {
-                        var category = new CategoryViewModel
-                        {
-                            Id = Convert.ToInt32(row["category_id"]),
-                            Name = row["category_name"].ToString(),
-                            Desc = row["category_desc"].ToString(),
-                            Books = new List<string>()
-                        };
+                        Id = c.Id,
+                        Name = c.Name,
+                        Desc = c.Description,
+                        Books = c.Books.Select(b => b.Title).ToList()
+                    })
+                    .ToListAsync();
 
-                        SqlCommand cmd = new SqlCommand(booksQuery, connection);
-                        cmd.Parameters.AddWithValue("@cat_id", category.Id);
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                category.Books.Add(reader["Title"].ToString()!);
-                            }
-                        }
-
-                        categories.Add(category);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
+                return View("AllCategories", categories);
             }
-
-            return View("AllCategories", categories);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching categories: {ex.Message}");
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpPost]
-        public IActionResult RedirectToAddBook(int CatId)
+        public IActionResult RedirectToAddBook(int catId)
         {
-            return RedirectToAction("AddBookCat", "Books", new { CatId = CatId });
+            return RedirectToAction("AddBookCat", "Books", new { CatId = catId });
         }
     }
 }

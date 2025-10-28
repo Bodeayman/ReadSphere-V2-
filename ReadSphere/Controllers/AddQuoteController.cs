@@ -1,24 +1,43 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using ReadSphere.Data;
+using Models;
 using ViewModels;
 
 namespace ReadSphere.Controllers
 {
+    [Authorize]
     public class AddQuoteController : Controller
     {
-        private readonly string _connectionString =
-            "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
+        private readonly ApplicationDBContext _context;
+        private readonly UserManager<User> _userManager;
+
+        public AddQuoteController(ApplicationDBContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
         [HttpGet]
-        public IActionResult AddQuotePage()
+        public async Task<IActionResult> AddQuotePage()
         {
-            if (!UserIsLoggedIn())
-                return RedirectToAction("Login", "Account");
+            var user = await _userManager.GetUserAsync(User);
 
+            // Get all books owned by the user
+            var books = await _context.Books
+                                .Where(b => b.Users.Any(u => u.Id == user.Id))
+                                .ToListAsync();
+
+            // Map to view model
             var model = new AddQuoteViewModel
             {
-                BooksList = LoadUserBooks()
+                BooksList = books.Select(b => new AddQuoteViewModel.BookItem
+                {
+                    Id = b.Id,
+                    Title = b.Title
+                }).ToList()
             };
 
             return View(model);
@@ -26,37 +45,29 @@ namespace ReadSphere.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddQuote(AddQuoteViewModel model)
+        public async Task<IActionResult> AddQuote(AddQuoteViewModel model)
         {
-            if (!UserIsLoggedIn())
-                return RedirectToAction("Login", "Account");
-
             if (!ModelState.IsValid)
             {
-                model.BooksList = LoadUserBooks();
-                return View("AddQuotePage", model);
+                return await AddQuotePage(); // reuse GET to reload books
             }
 
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                var user = await _userManager.GetUserAsync(User);
+                var Book = await _context.Books.FirstOrDefaultAsync(B => B.Id == model.BookID);
+                var quote = new Quote
                 {
-                    string query = @"INSERT INTO Quote (Quote_Id, Book_Id, quote_text, Added_date, Page_number, owner_quote_id)
-                                     VALUES (@id, @book_id, @quote_text, @added_date, @page, @owner)";
-                    SqlCommand cmd = new SqlCommand(query, connection);
+                    Book = Book,
+                    QuoteText = model.QuoteText,
+                    CreatedAt = DateTime.Now,
+                    PageNumber = model.PageNumber,
+                    BookId = model.BookID,
+                    UserId = user.Id
+                };
 
-                    int randomId = new Random().Next(1, 10000);
-
-                    cmd.Parameters.AddWithValue("@id", randomId);
-                    cmd.Parameters.AddWithValue("@book_id", model.BookID);
-                    cmd.Parameters.AddWithValue("@quote_text", model.QuoteText);
-                    cmd.Parameters.AddWithValue("@added_date", DateTime.Now.Date);
-                    cmd.Parameters.AddWithValue("@page", model.PageNumber);
-                    cmd.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
-
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
-                }
+                _context.Quotes.Add(quote);
+                await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Quote added successfully!";
                 return RedirectToAction("Index", "Home");
@@ -65,40 +76,17 @@ namespace ReadSphere.Controllers
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 ModelState.AddModelError("", "Failed to add quote.");
-                model.BooksList = LoadUserBooks();
-                return View("AddQuotePage", model);
+                return await AddQuotePage();
             }
         }
 
-        private List<AddQuoteViewModel.BookItem> LoadUserBooks()
+        // Optional: Get all quotes related to the user
+        private async Task<List<Quote>> GetUserQuotes(string userId)
         {
-            var books = new List<AddQuoteViewModel.BookItem>();
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = @"SELECT Book_id, Title 
-                                 FROM Book 
-                                 WHERE Book_id IN (SELECT BookId FROM BooksPossess WHERE OwnerId = @owner)";
-                SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
-                adapter.SelectCommand.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
-
-                DataTable table = new DataTable();
-                connection.Open();
-                adapter.Fill(table);
-
-                foreach (DataRow row in table.Rows)
-                {
-                    books.Add(new AddQuoteViewModel.BookItem
-                    {
-                        Id = Convert.ToInt32(row["Book_id"]),
-                        Title = row["Title"].ToString()
-                    });
-                }
-            }
-
-            return books;
+            return await _context.Quotes
+                        .Include(q => q.Book)
+                        .Where(q => q.UserId == userId)
+                        .ToListAsync();
         }
-
-        private bool UserIsLoggedIn() => Request.Cookies["user_id"] != null;
     }
 }

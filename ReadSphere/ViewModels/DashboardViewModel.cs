@@ -12,6 +12,8 @@ namespace ViewModels
         public List<Club> MyClubs { get; set; } = new();
         public List<Quote> MyQuotes { get; set; } = new();
         public List<Note> MyNotes { get; set; } = new();
+        public List<Category> MyCategories { get; set; } = new();
+
         public List<Notification> Ongoing { get; set; } = new();
         public List<Notification> DueGoing { get; set; } = new();
 

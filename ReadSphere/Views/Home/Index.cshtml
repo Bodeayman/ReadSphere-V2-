@@ -148,7 +148,7 @@
     @if (User.Identity.IsAuthenticated)
     {
         <div class="d-flex flex-row align-items-center mt-4">
-            <form method="post" asp-action="Logout" asp-controller="Home">
+            <form method="post" asp-action="Logout" asp-controller="Account">
                 <button type="submit" class="btn btn-danger ms-2">Logout</button>
             </form>
 
@@ -207,7 +207,7 @@
                 }
             </div>
 
-            @if (Context.Request.Cookies["is_admin"] == "admin")
+            @if (User.IsInRole("Admin"))
             {
                 <a class="btn btn-primary mt-3" asp-controller="AddClub" asp-action="AddClubPage">Add New Club</a>
             }
@@ -218,7 +218,7 @@
     {
         <div class="books-section mt-4">
             <h3>Categories</h3>
-            @if (Context.Request.Cookies["is_admin"] == "admin")
+            @if (User.IsInRole("Admin"))
             {
                 <a class="btn btn-primary" asp-controller="AddCategory" asp-action="CreateCategory">Add New Category</a>
             }

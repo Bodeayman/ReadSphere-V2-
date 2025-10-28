@@ -3,7 +3,7 @@
     ViewData["Title"] = "Add Quote";
 }
 
-@if (Context.Request.Cookies["User"] != null)
+@if (User.Identity.IsAuthenticated)
 {
     <form asp-action="AddQuote" asp-controller="AddQuote" method="post">
         <div class="container mt-5">
