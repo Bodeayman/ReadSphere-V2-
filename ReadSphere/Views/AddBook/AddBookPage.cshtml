@@ -9,7 +9,7 @@
     ViewData["Title"] = "Add Book";
 }
 
-@if (Context.Request.Cookies["is_admin"] == "admin")
+@if (User.IsInRole("Admin"))
 {
     <form asp-action="AddBookToDB" asp-controller="AddBook" method="post" enctype="multipart/form-data">
         <div class="container mt-5">

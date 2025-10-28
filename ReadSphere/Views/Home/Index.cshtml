@@ -102,7 +102,7 @@
                 </div>
 
                 <!-- Notes Carousel -->
-                <div id="notesCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div id="notesCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         @if (Model.MyNotes != null && Model.MyNotes.Count > 0)
                         {
@@ -214,7 +214,7 @@
         </div>
     }
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.IsInRole("Admin"))
     {
         <div class="books-section mt-4">
             <h3>Categories</h3>
@@ -225,7 +225,7 @@
         </div>
     }
 
-    @if (Context.Request.Cookies["is_admin"] == "admin")
+    @if (User.IsInRole("Admin"))
     {
         <div class="container py-5 bg-white mt-4">
             <h2 class="text-center mb-4">Statistics</h2>

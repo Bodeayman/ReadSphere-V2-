@@ -2,11 +2,11 @@
 
 namespace ViewModels
 {
-    public class AddReviewModel
+    public class AddReviewViewModel
     {
         public int BookId { get; set; }
-        public double Rating { get; set; }
-        public string Review_Text { get; set; }
+        public float Rating { get; set; }
+        public string ReviewText { get; set; }
     }
 
 }

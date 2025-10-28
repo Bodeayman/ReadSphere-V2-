@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Models;
+using ReadSphere.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,16 +13,23 @@ namespace Controllers
 {
     public class AllBooksController : Controller
     {
-        private readonly string _connectionString =
-            "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
+
+
+        private readonly ApplicationDBContext _context;
+        private readonly UserManager<User> _userManager;
 
         // GET: /Books
+        public AllBooksController(ApplicationDBContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var viewModel = new BookViewModel
             {
-                Books = GetAllBooks()
+                Books = await GetAllBooks()
             };
             viewModel.Count = viewModel.Books.Count;
             return View("AllBooks", viewModel);
@@ -27,15 +37,15 @@ namespace Controllers
 
         // POST: /Books/AddToUser
         [HttpPost]
-        public IActionResult AddToUser(int bookId)
+        public async Task<IActionResult> AddToUser(int id)
         {
-            Console.WriteLine($"Received BookId: {bookId}");
-            string userId = Request.Cookies["user_id"];
 
-            if (string.IsNullOrEmpty(userId))
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            bool success = AddBookToUser(Convert.ToInt32(userId), bookId);
+            bool success = await AddBookToUser(user.Id, id);
 
             if (success)
             {
@@ -48,74 +58,46 @@ namespace Controllers
             return RedirectToAction("Index");
         }
 
-        private List<Book> GetAllBooks()
+        private async Task<List<Book>> GetAllBooks()
         {
-            var books = new List<Book>();
 
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            var Books = await _context.Books.ToListAsync();
+            foreach (var Book in Books)
             {
-                string query = "SELECT * FROM BOOK";
-                SqlCommand cmd = new(query, connection);
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                DataTable dataTable = new DataTable();
-
-                try
+                var book = new Book
                 {
-                    connection.Open();
-                    adapter.Fill(dataTable);
+                    Id = Book.Id,
+                    Title = Book.Title,
+                    Author = Book.Author,
+                    Publisher = Book.Publisher,
+                    Language = Book.Language,
+                    CoverImage = Book.CoverImage,
+                    AvgRate = Book.AvgRate,
+                    UsersRatings = new List<Rating>()
+                };
 
-                    foreach (DataRow row in dataTable.Rows)
-                    {
-                        var book = new Book
-                        {
-                            Id = Convert.ToInt32(row["Book_Id"]),
-                            Title = row["Title"].ToString(),
-                            Author = row["Author_Name"].ToString(),
-                            Publisher = row["Publisher"].ToString(),
-                            Language = row["Language"].ToString(),
-                            CoverImage = row["Cover_Image"].ToString(),
-                            AvgRate = 0,
-                            UsersRatings = new List<Rating>()
-                        };
-                        books.Add(book);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error loading books: {ex.Message}");
-                }
             }
-            return books;
+            return Books;
+
         }
 
-        private bool AddBookToUser(int userId, int bookId)
+        private async Task<bool> AddBookToUser(string userId, int bookId)
         {
             bool success = false;
-            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string checkBookExistsQuery = "SELECT COUNT(*) FROM BOOK WHERE Book_Id = @BookId";
                 string insertQuery = "INSERT INTO BooksPossess (OwnerId, BookId) VALUES (@UserId, @BookId)";
 
                 try
                 {
-                    connection.Open();
+                    var user = await _userManager.FindByIdAsync(userId);
 
-                    SqlCommand checkCmd = new(checkBookExistsQuery, connection);
-                    checkCmd.Parameters.AddWithValue("@BookId", bookId);
-                    int bookCount = (int)checkCmd.ExecuteScalar();
+                    var book = await _context.Books.FindAsync(bookId);
+                    _context.Entry(user).Collection(u => u.Books).Load();
 
-                    if (bookCount > 0)
-                    {
-                        SqlCommand insertCmd = new(insertQuery, connection);
-                        insertCmd.Parameters.AddWithValue("@UserId", userId);
-                        insertCmd.Parameters.AddWithValue("@BookId", bookId);
-                        insertCmd.ExecuteNonQuery();
-                        success = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("The specified book does not exist.");
-                    }
+                    user.Books.Add(book);
+                    await _context.SaveChangesAsync();
+
                 }
                 catch (Exception ex)
                 {

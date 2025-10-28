@@ -7,7 +7,7 @@
 <h1 class="my-5">Books</h1>
 
 <div class="book-list row">
-    @if (Context.Request.Cookies["User"] != null)
+    @if (User.Identity.IsAuthenticated)
     {
         if (Model.Books != null && Model.Books.Any())
         {
@@ -20,12 +20,13 @@
                                 <h3 class="book-title card-title">@book.Title</h3>
                                 <p class="book-author text-muted">by @book.Author</p>
 
-                                <a class="btn btn-primary" asp-controller="BookDetails" asp-action="Details"
+                                <a class="btn btn-primary m-2" asp-controller="BookDetails" asp-action="Details"
                                     asp-route-id="@book.Id">
                                     View Details
                                 </a>
 
-                                <form method="post" asp-action="AddToUser" asp-controller="AllBooks" asp-route-id="@book.Id">
+                                <form class="m-2" method="post" asp-action="AddToUser" asp-controller="AllBooks"
+                                    asp-route-id="@book.Id">
                                     <input type="hidden" name="BookId" value="@book.Id" />
                                     <input type="submit" value="Add the book" class="btn btn-primary" />
                                 </form>

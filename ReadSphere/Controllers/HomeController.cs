@@ -98,7 +98,7 @@ namespace ReadSphere.Controllers
                 .Where(b => b.Users.Any(u => u.Id == userId)) // filter books related to that user
                 .Include(b => b.Users)
                 .ToListAsync();
-
+            Console.WriteLine("The number of books is " + books.Count);
             foreach (Book Book in books)
             {
                 var title = Book.Title.ToString()!;

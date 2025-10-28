@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using ReadSphere.Data;
 using System.IO;
 using ViewModels;
 
@@ -9,6 +10,12 @@ namespace Controllers
 
     public class AddBookController : Controller
     {
+
+        private readonly ApplicationDBContext _context;
+        public AddBookController(ApplicationDBContext context)
+        {
+            _context = context;
+        }
         [HttpGet]
         public IActionResult AddBookPage()
         {
@@ -18,7 +25,7 @@ namespace Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddBookToDB(AddBookModel model)
+        public async Task<IActionResult> AddBookToDB(AddBookModel model)
         {
             /*string Title, string Author, string Publisher, string Language, IFormFile cover_image*/
             try
@@ -44,30 +51,22 @@ namespace Controllers
                 string connectionString = "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
 
                 int randomId = new Random().Next(0, 10000);
-                string query = @"INSERT INTO BOOK (Book_Id, Title, Author_Name, Publisher, Language, Cover_Image)
-                         VALUES (@id, @Title, @Author, @Publisher, @Language, @CoverImage)";
-
-                using (SqlConnection connection = new(connectionString))
-                using (SqlCommand cmd = new(query, connection))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@id", randomId);
-                    cmd.Parameters.AddWithValue("@Title", model.Title);
-                    cmd.Parameters.AddWithValue("@Author", model.Author);
-                    cmd.Parameters.AddWithValue("@Publisher", model.Publisher);
-                    cmd.Parameters.AddWithValue("@Language", model.Language);
-                    cmd.Parameters.AddWithValue("@CoverImage", imageUrl);
-
-                    try
+                    var Book = await _context.Books.AddAsync(new Models.Book
                     {
-                        connection.Open();
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        ModelState.AddModelError("", "Error adding book.");
-                        return View("AddBookPage");
-                    }
+                        Author = model.Author,
+                        Title = model.Title,
+                        Publisher = model.Publisher,
+                        Language = model.Language,
+                        CoverImage = imageUrl,
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    ModelState.AddModelError("", "Error adding book.");
+                    return View("AddBookPage");
                 }
                 Console.WriteLine("The file is working finllay , and the operation is saved");
                 return View("AddBookPage", model);
@@ -81,7 +80,6 @@ namespace Controllers
             }
         }
 
-        // Example index action
 
     }
 

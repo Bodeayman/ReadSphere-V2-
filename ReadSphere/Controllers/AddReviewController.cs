@@ -1,68 +1,64 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Models;
+using ReadSphere.Data;
 using ViewModels;
 
 public class AddReviewController : Controller
 {
-    private readonly string _connectionString =
-        "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
+    private readonly ApplicationDBContext _context;
+    private readonly UserManager<User> _userManager;
 
-    // GET: /BookDetails/AddReview/5
-    [HttpGet]
-    public IActionResult AddReview(int id) // <-- Book ID passed from URL
+    public AddReviewController(ApplicationDBContext context, UserManager<User> userManager)
     {
-        if (Request.Cookies["User"] == null)
-        {
-            return RedirectToAction("Login", "Account");
-        }
+        _context = context;
+        _userManager = userManager;
 
-        var model = new AddReviewModel
+    }
+    // GET: /AddReview/AddReview/5
+    [HttpGet]
+    public async Task<IActionResult> AddReview(int id) // id = BookId
+    {
+        var book = await _context.Books.FindAsync(id);
+
+        if (book == null)
+            return NotFound();
+
+        var model = new AddReviewViewModel
         {
-            BookId = id // assign the book ID to the model
+            BookId = id
         };
 
-        return View(model); // load the AddReview.cshtml view with the book info
+        return View("AddReview", model);
     }
 
-    // POST: /BookDetails/AddRating
+    // POST: /AddReview/AddRating
     [HttpPost]
-    public IActionResult AddRating(AddReviewModel model)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddRating(AddReviewViewModel model)
     {
         if (!ModelState.IsValid)
-        {
             return View("AddReview", model);
-        }
 
-        try
+        var book = await _context.Books.FindAsync(model.BookId);
+        var user = await _userManager.GetUserAsync(User);
+        if (book == null)
+            return NotFound();
+
+        var review = new Rating
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = @"INSERT INTO Review (ReviewId, BookId, Rating, ReviewText, OwnerId, AddedDate)
-                                 VALUES (@id, @bookId, @rating, @review_text, @owner, @date)";
+            User = user,
+            UserId = user.Id,
+            BookId = model.BookId,
+            Book = book,
+            Rate = model.Rating,
+            Comment = model.ReviewText
+        };
 
-                SqlCommand cmd = new SqlCommand(query, connection);
+        _context.Ratings.Add(review);
+        await _context.SaveChangesAsync();
 
-                Random rnd = new();
-                int randomId = rnd.Next(10000, 99999);
-
-                cmd.Parameters.AddWithValue("@id", randomId);
-                cmd.Parameters.AddWithValue("@bookId", model.BookId);
-                cmd.Parameters.AddWithValue("@rating", model.Rating);
-                cmd.Parameters.AddWithValue("@review_text", model.Review_Text);
-                cmd.Parameters.AddWithValue("@owner", Convert.ToInt32(Request.Cookies["user_id"]));
-                cmd.Parameters.AddWithValue("@date", DateTime.Now);
-
-                connection.Open();
-                cmd.ExecuteNonQuery();
-            }
-
-            // After adding the review, go back to that book's detail page
-            return RedirectToAction("Details", new { id = model.BookId });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-            return View("AddReview", model);
-        }
+        return RedirectToAction("Details", "AllBooks", new { id = model.BookId });
     }
 }

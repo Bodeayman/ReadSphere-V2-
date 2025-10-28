@@ -1,36 +1,44 @@
-﻿@using Microsoft.AspNetCore.Http
-@using System.ComponentModel.DataAnnotations
-@model ViewModels.AddReviewModel
+﻿@model ViewModels.AddReviewViewModel
 @{
     ViewData["Title"] = "Add Review";
 }
 
-@if (Context.Request.Cookies["User"] != null)
+@if (User.Identity.IsAuthenticated)
 {
-    <form method="post" asp-controller="AddReview" asp-action="AddRating">
-        <div class="container mt-5">
-            <h2>Add Review</h2>
+    <div class="container mt-5">
+        <div class="card shadow-sm p-4">
+            <h2 class="mb-4">Add Review</h2>
 
-            <!-- Hidden field to keep track of which book this review belongs to -->
-            <input type="hidden" asp-for="BookId" />
+            <form method="post" asp-controller="AddReview" asp-action="AddRating" asp-antiforgery="true">
+                @* Keeps track of which book this review belongs to *@
+                <input type="hidden" asp-for="BookId" />
 
-            <div class="mb-3">
-                <label asp-for="Rating" class="form-label">Rating</label>
-                <input asp-for="Rating" class="form-control" type="number" min="0" step="0.1" max="5" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="mb-3">
-                <label asp-for="Review_Text" class="form-label">Description</label>
-                <textarea asp-for="Review_Text" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Review_Text" class="text-danger"></span>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="Rating" class="form-label"></label>
+                    <input asp-for="Rating" class="form-control" type="number" min="0" max="5" step="0.1" />
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
 
-            <button type="submit" class="btn btn-primary">Add Review</button>
+                <div class="mb-3">
+                    <label asp-for="ReviewText" class="form-label"></label>
+                    <textarea asp-for="ReviewText" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="ReviewText" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <a asp-controller="AllBooks" asp-action="Details" asp-route-id="@Model.BookId"
+                    class="btn btn-secondary ms-2">Cancel</a>
+            </form>
         </div>
-    </form>
+    </div>
 }
 else
 {
-    <h2>Access Denied, Please Sign in</h2>
+    <div class="container mt-5 text-center">
+        <h3 class="text-danger mb-3">Access Denied</h3>
+        <p>You must sign in to add a review.</p>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Sign In</a>
+    </div>
 }
