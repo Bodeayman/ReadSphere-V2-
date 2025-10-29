@@ -20,8 +20,7 @@ namespace ReadSphere.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDBContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly string connectionString =
-            "Server=ENGABDULLAH;Database=ReadSphere;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;";
+
 
         public HomeController(ILogger<HomeController> logger, ApplicationDBContext context, UserManager<User> userManager)
         {
@@ -35,25 +34,6 @@ namespace ReadSphere.Controllers
 
 
             return View();
-        }
-        private int GetCount(string query)
-        {
-            int count = 0;
-            using SqlConnection connection = new(connectionString);
-            try
-            {
-                SqlDataAdapter da = new(query, connection);
-                DataTable dt = new();
-                connection.Open();
-                da.Fill(dt);
-                if (dt.Rows.Count > 0)
-                    count = Convert.ToInt32(dt.Rows[0][0]);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error counting: {ex.Message}");
-            }
-            return count;
         }
 
 
@@ -76,16 +56,10 @@ namespace ReadSphere.Controllers
             DashboardViewModel vm = new DashboardViewModel();
 
             // Fill totals
-            vm.TotalBooks = GetCount("SELECT COUNT(*) FROM book");
-            vm.TotalClubs = GetCount("SELECT COUNT(*) FROM club");
-            vm.TotalQuotes = GetCount("SELECT COUNT(*) FROM quote");
-            vm.TotalNotes = GetCount("SELECT COUNT(*) FROM note");
-            vm.TotalUsers = GetCount("SELECT COUNT(*) FROM [User]");
+
 
             vm.SearchQuery = searchQuery;
 
-            using SqlConnection connection = new(connectionString);
-            connection.Open();
 
 
             // Books
@@ -95,21 +69,16 @@ namespace ReadSphere.Controllers
             var userId = _userManager.GetUserId(User); // gets logged-in user's ID
 
             var books = await _context.Books
-                .Where(b => b.Users.Any(u => u.Id == userId)) // filter books related to that user
+                .Where(b => (b.Users.Any(u => u.Id == userId) && b.Title.Contains(searchQuery ?? ""))) // filter books related to that user
                 .Include(b => b.Users)
                 .ToListAsync();
             Console.WriteLine("The number of books is " + books.Count);
             foreach (Book Book in books)
             {
-                var title = Book.Title.ToString()!;
-                var author = Book.Author.ToString()!;
+                var title = Book.Title;
+                var author = Book.Author;
 
-                if (!string.IsNullOrEmpty(searchQuery))
-                {
-                    var regex = new Regex(searchQuery, RegexOptions.IgnoreCase);
-                    if (!regex.IsMatch(title) && !regex.IsMatch(author))
-                        continue;
-                }
+
 
                 vm.MyBooks.Add(Book);
             }

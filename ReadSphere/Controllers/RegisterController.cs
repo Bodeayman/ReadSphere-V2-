@@ -36,7 +36,6 @@ public class RegisterController : Controller
         try
         {
 
-            int isAdmin = Request.Cookies["is_admin"] == "admin" ? 1 : 0;
             User newRegisteredUser = new User
             {
                 Email = model.Email,
@@ -49,7 +48,7 @@ public class RegisterController : Controller
             if (UserRegisterd.Succeeded)
             {
                 {
-                    string role = "Admin";
+                    string role = "User";
 
                     // Ensure the role exists
                     if (!await _roleManager.RoleExistsAsync(role))
